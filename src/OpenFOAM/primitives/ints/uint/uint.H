@@ -35,6 +35,7 @@ SourceFiles
 #ifndef uint_H
 #define uint_H
 
+#include "uint16.H"
 #include "uint32.H"
 #include "uint64.H"
 

@@ -56,7 +56,11 @@ Description
 #include <sys/socket.h>
 #include <netdb.h>
 #include <dlfcn.h>
+#if defined(darwin64)
+#include <mach-o/dyld.h>
+#else
 #include <link.h>
+#endif
 
 #include <netinet/in.h>
 
@@ -647,9 +651,15 @@ double Foam::highResLastModified
     fileStat fileStatus(name, checkVariants, followLink);
     if (fileStatus.isValid())
     {
+#if defined(darwin64)
+        return
+            fileStatus.status().st_mtime
+          + 1e-9*fileStatus.status().st_atimespec.tv_nsec;
+#else
         return
             fileStatus.status().st_mtime
           + 1e-9*fileStatus.status().st_atim.tv_nsec;
+#endif
     }
     else
     {
@@ -1245,6 +1255,20 @@ void* Foam::dlOpen(const fileName& lib, const bool check)
             << " : dlopen of " << lib << std::endl;
     }
     void* handle = ::dlopen(lib.c_str(), RTLD_LAZY|RTLD_GLOBAL);
+#if defined(darwin64)
+    if (handle == nullptr && lib.ext() == "so")
+    {
+        fileName fallback_lib = lib.lessExt() + ".dylib";
+        if (check)
+        {
+            WarningIn("dlOpen(const fileName&, const bool)")
+                << "dlOpen: using fallback library name "
+                << fallback_lib
+                << endl;
+        }
+        handle = ::dlopen(fallback_lib.c_str(), RTLD_LAZY|RTLD_GLOBAL);
+    }
+#endif
 
     if (!handle && check)
     {
@@ -1333,6 +1357,7 @@ bool Foam::dlSymFound(void* handle, const std::string& symbol)
 }
 
 
+#if ! defined(darwin64)
 static int collectLibsCallback
 (
     struct dl_phdr_info *info,
@@ -1345,12 +1370,20 @@ static int collectLibsCallback
     ptr->append(info->dlpi_name);
     return 0;
 }
+#endif
 
 
 Foam::fileNameList Foam::dlLoaded()
 {
     DynamicList<fileName> libs;
+#if defined(darwin64)
+    for(uint32_t cnt = 0; cnt < _dyld_image_count(); ++cnt)
+    {
+       libs.append(_dyld_get_image_name(cnt));
+    }
+#else
     dl_iterate_phdr(collectLibsCallback, &libs);
+#endif
     if (POSIX::debug)
     {
         std::cout

@@ -6,7 +6,9 @@ cd ${0%/*} || exit 1    # Run from this directory
 
 
 # Get SCOTCH_VERSION, SCOTCH_ARCH_PATH
-if settings=`$WM_PROJECT_DIR/bin/foamEtcFile config.sh/scotch`
+_scotchConf="config.sh/scotch"
+[ "$(uname -s)" = "Darwin" ] && _scotchConf="config.sh/mac/scotch"
+if settings=`$WM_PROJECT_DIR/bin/foamEtcFile "$_scotchConf"`
 then
     . $settings
     echo "    using SCOTCH_ARCH_PATH=$SCOTCH_ARCH_PATH"
@@ -15,6 +17,7 @@ else
     echo "    Error: no config.sh/scotch settings"
     echo
 fi
+unset _scotchConf
 
 
 # Define how to create an mpi-versioned library of $targetType

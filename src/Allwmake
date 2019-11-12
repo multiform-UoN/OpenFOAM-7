@@ -12,10 +12,12 @@ wmakeCheckPwd "$WM_PROJECT_DIR/src" || {
     exit 1
 }
 
+[ "$(uname -s)" = "Darwin" ] || {
 [ -n "$FOAM_EXT_LIBBIN" ] || {
     echo "Allwmake error: FOAM_EXT_LIBBIN not set"
     echo "    Check the OpenFOAM entries in your dot-files and source them."
     exit 1
+}
 }
 
 # Update OpenFOAM version strings if required

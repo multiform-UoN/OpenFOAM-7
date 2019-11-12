@@ -84,7 +84,11 @@ string pOpen(const string &cmd, label line=0)
 inline word addressToWord(const uintptr_t addr)
 {
     OStringStream nStream;
+    #if defined(darwin64)
+    nStream << "0x" << hex << uint64_t(addr);
+    #else
     nStream << "0x" << hex << addr;
+    #endif
     return nStream.str();
 }
 
@@ -100,9 +104,11 @@ void printSourceFileAndLine
     uintptr_t address = uintptr_t(addr);
     word myAddress = addressToWord(address);
 
+#if ! defined(darwin64)
     if (filename.ext() == "so")
+#endif
     {
-        // Convert address into offset into dynamic library
+        // Convert address into offset
         uintptr_t offset = uintptr_t(info->dli_fbase);
         intptr_t relativeAddress = address - offset;
         myAddress = addressToWord(relativeAddress);
@@ -112,12 +118,39 @@ void printSourceFileAndLine
     {
         string line = pOpen
         (
+#if defined(darwin64)
+            "echo 'image lookup -va " + myAddress + "'"
+          + " | xcrun lldb "
+          + "-O 'target create --no-dependents -a x86_64 "
+          + filename
+          + "' -o '"
+          + "target modules load -f "
+          + filename
+          + " __TEXT 0x0' 2> /dev/null"
+          + " | grep LineEntry"
+#else
             "addr2line -f --demangle=auto --exe "
           + filename
           + " "
           + myAddress,
             1
+#endif
         );
+
+#if defined(darwin64)
+        {
+            regExp re(".+LineEntry: .+: (.+):([0-9]+):[0-9]+");
+            List<std::string> groups;
+            if (!re.match(line, groups))
+            {
+                line = "??:0";
+            }
+            else
+            {
+                line = groups[0] + ":" + groups[1];
+            }
+        }
+#endif
 
         if (line == "")
         {
@@ -156,9 +189,9 @@ fileName absolutePath(const char* fn)
 }
 
 
-word demangleSymbol(const char* sn)
+string demangleSymbol(const char* sn)
 {
-    word res;
+    string res;
     int st;
     char* cxx_sname = abi::__cxa_demangle
     (
@@ -170,12 +203,12 @@ word demangleSymbol(const char* sn)
 
     if (st == 0 && cxx_sname)
     {
-        res = word(cxx_sname);
+        res = string(cxx_sname);
         free(cxx_sname);
     }
     else
     {
-        res = word(sn);
+        res = string(sn);
     }
 
     return res;

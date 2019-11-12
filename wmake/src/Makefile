@@ -52,6 +52,8 @@ WM_COMPILE_OPTION = Opt
 GENERAL_RULES   = $(WM_DIR)/rules/General
 include $(GENERAL_RULES)/general
 
+cFLAGS += -Wno-unused-function
+
 
 #------------------------------------------------------------------------------
 # Targets

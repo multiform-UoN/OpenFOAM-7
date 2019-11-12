@@ -80,7 +80,11 @@ LIB_LIBS        =
 LIB             = libNULL
 
 # Shared library extension
+ifeq ("$(shell uname -s)","Darwin")
+SO              = dylib
+else
 SO              = so
+endif
 
 # Project executable
 EXE             = $(WM_PROJECT).out

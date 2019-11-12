@@ -4,10 +4,14 @@ cd ${0%/*} || exit 1    # Run from this directory
 # Parse arguments for library compilation
 . $WM_PROJECT_DIR/wmake/scripts/AllwmakeParseArguments
 
-export ParMGridGen=$WM_THIRD_PARTY_DIR/ParMGridGen-1.0
-
-if [ -e "$FOAM_LIBBIN/libMGridGen.so" ]
+if [ "$(uname -s)" = "Darwin" ]
 then
+    [ -e "/usr/local/opt/parmgridgen/lib/libmgrid.a" -a \
+        "$WM_LABEL_SIZE" -ne "64" ] \
+        && wmake $targetType MGridGenGamgAgglomeration
+elif [ -e "$FOAM_LIBBIN/libMGridGen.so" ]
+then
+    export ParMGridGen=$WM_THIRD_PARTY_DIR/ParMGridGen-1.0
     wmake $targetType MGridGenGamgAgglomeration
 fi
 

@@ -42,8 +42,8 @@ export WM_PROJECT_VERSION=7
 #
 # Please set to the appropriate path if the default is not correct.
 #
-[ "$BASH" -o "$ZSH_NAME" ] && \
-export FOAM_INST_DIR=$(cd $(dirname ${BASH_SOURCE:-$0})/../.. && pwd -P) || \
+# [ "$BASH" -o "$ZSH_NAME" ] && \
+# export FOAM_INST_DIR=$(cd $(dirname ${BASH_SOURCE:-$0})/../.. && pwd -P) || \
 export FOAM_INST_DIR=$HOME/$WM_PROJECT
 # export FOAM_INST_DIR=~$WM_PROJECT
 # export FOAM_INST_DIR=/opt/$WM_PROJECT
@@ -51,6 +51,16 @@ export FOAM_INST_DIR=$HOME/$WM_PROJECT
 #
 # END OF (NORMAL) USER EDITABLE PART
 ################################################################################
+
+_foam_on_macos()
+{
+    if [ "$(uname -s)" = "Darwin" ]
+    then
+        return 0
+    else
+        return 1
+    fi
+}
 
 # The default environment variables below can be overridden in a prefs.sh file
 # located in ~/.OpenFOAM/$WM_PROJECT_VERSION, ~/.OpenFOAM,
@@ -62,7 +72,7 @@ export WM_COMPILER_TYPE=system
 
 #- Compiler:
 #    WM_COMPILER = Gcc | Gcc48 ... Gcc62 | Clang | Icc
-export WM_COMPILER=Gcc
+export WM_COMPILER=Clang
 unset WM_COMPILER_ARCH WM_COMPILER_LIB_ARCH
 
 #- Memory addressing:
@@ -115,7 +125,8 @@ export WM_PROJECT_DIR=$WM_PROJECT_INST_DIR/$WM_PROJECT-$WM_PROJECT_VERSION
 
 # Location of third-party software
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-export WM_THIRD_PARTY_DIR=$WM_PROJECT_INST_DIR/ThirdParty-$WM_PROJECT_VERSION
+_foam_on_macos \
+    || export WM_THIRD_PARTY_DIR=$WM_PROJECT_INST_DIR/ThirdParty-$WM_PROJECT_VERSION
 
 # Location of site-specific templates etc
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -135,8 +146,10 @@ export WM_PROJECT_USER_DIR=$HOME/$WM_PROJECT/$USER-$WM_PROJECT_VERSION
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 . $WM_PROJECT_DIR/etc/config.sh/functions
 
+_foam_on_macos && . $WM_PROJECT_DIR/etc/config.sh/mac/functions
+
 # Add in preset user or site preferences:
-_foamSource `$WM_PROJECT_DIR/bin/foamEtcFile prefs.sh`
+_foamSource $($WM_PROJECT_DIR/bin/foamEtcFile prefs.sh)
 
 # Evaluate command-line parameters and record settings for later
 # these can be used to set/unset values, or specify alternative pref files
@@ -148,16 +161,25 @@ _foamEval $@
 foamClean=$WM_PROJECT_DIR/bin/foamCleanPath
 
 #- Clean PATH
-cleaned=`$foamClean "$PATH" "$foamOldDirs"` && PATH="$cleaned"
+cleaned=$($foamClean "$PATH" "$foamOldDirs") && PATH="$cleaned"
 
-#- Clean LD_LIBRARY_PATH
-cleaned=`$foamClean "$LD_LIBRARY_PATH" "$foamOldDirs"` \
-    && LD_LIBRARY_PATH="$cleaned"
+if _foam_on_macos
+then
+    #- Clean DYLD_LIBRARY_PATH on macOS
+    cleaned=$($foamClean "$DYLD_LIBRARY_PATH" "$foamOldDirs") \
+        && DYLD_LIBRARY_PATH="$cleaned"
+    export DYLD_LIBRARY_PATH
+else
+    #- Clean LD_LIBRARY_PATH
+    cleaned=$($foamClean "$LD_LIBRARY_PATH" "$foamOldDirs") \
+        && LD_LIBRARY_PATH="$cleaned"
+    export LD_LIBRARY_PATH
+fi
 
 #- Clean MANPATH
-cleaned=`$foamClean "$MANPATH" "$foamOldDirs"` && MANPATH="$cleaned"
+cleaned=$($foamClean "$MANPATH" "$foamOldDirs") && MANPATH="$cleaned"
 
-export PATH LD_LIBRARY_PATH MANPATH
+export PATH MANPATH
 
 
 # Source project setup files
@@ -169,13 +191,23 @@ _foamSource $WM_PROJECT_DIR/etc/config.sh/aliases
 # Source user setup files for optional packages
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 _foamSource `$WM_PROJECT_DIR/bin/foamEtcFile config.sh/mpi`
-_foamSource `$WM_PROJECT_DIR/bin/foamEtcFile config.sh/paraview`
-_foamSource `$WM_PROJECT_DIR/bin/foamEtcFile config.sh/ensight`
-_foamSource `$WM_PROJECT_DIR/bin/foamEtcFile config.sh/gperftools`
+if _foam_on_macos
+then
+    _foamSource `$WM_PROJECT_DIR/bin/foamEtcFile config.sh/mac/paraview`
+else
+    _foamSource `$WM_PROJECT_DIR/bin/foamEtcFile config.sh/paraview`
+    _foamSource `$WM_PROJECT_DIR/bin/foamEtcFile config.sh/ensight`
+    _foamSource `$WM_PROJECT_DIR/bin/foamEtcFile config.sh/gperftools`
+fi
 
 if [ ! -z "$FOAMY_HEX_MESH" ]
 then
-    _foamSource `$WM_PROJECT_DIR/bin/foamEtcFile config.sh/CGAL`
+    if _foam_on_macos
+    then
+        _foamSource `$WM_PROJECT_DIR/bin/foamEtcFile config.sh/mac/CGAL`
+    else
+        _foamSource `$WM_PROJECT_DIR/bin/foamEtcFile config.sh/CGAL`
+    fi
 fi
 
 
@@ -184,13 +216,21 @@ fi
 #- Clean PATH
 cleaned=`$foamClean "$PATH"` && PATH="$cleaned"
 
-#- Clean LD_LIBRARY_PATH
-cleaned=`$foamClean "$LD_LIBRARY_PATH"` && LD_LIBRARY_PATH="$cleaned"
+if _foam_on_macos
+then
+    #- Clean DYLD_LIBRARY_PATH
+    cleaned=`$foamClean "$DYLD_LIBRARY_PATH"` && DYLD_LIBRARY_PATH="$cleaned"
+    export DYLD_LIBRARY_PATH
+else
+    #- Clean LD_LIBRARY_PATH
+    cleaned=`$foamClean "$LD_LIBRARY_PATH"` && LD_LIBRARY_PATH="$cleaned"
+    export LD_LIBRARY_PATH
+fi
 
 #- Clean MANPATH (trailing ':' to find system pages)
 cleaned=`$foamClean "$MANPATH"`: && MANPATH="$cleaned"
 
-export PATH LD_LIBRARY_PATH MANPATH
+export PATH MANPATH
 
 #- Clean LD_PRELOAD
 if [ -n "$LD_PRELOAD" ]
@@ -208,6 +248,8 @@ unset cleaned foamClean foamOldDirs
 # Unload initialization functions:
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 . $WM_PROJECT_DIR/etc/config.sh/functions
+
+_foam_on_macos && . $WM_PROJECT_DIR/etc/config.sh/mac/functions
 
 # Source the bash completion file:
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

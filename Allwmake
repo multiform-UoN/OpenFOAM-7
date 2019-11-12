@@ -12,10 +12,12 @@ wmakeCheckPwd "$WM_PROJECT_DIR" || {
     exit 1
 }
 
+[ "$(uname -s)" = "Darwin" ] || {
 [ -n "$FOAM_EXT_LIBBIN" ] || {
     echo "Allwmake error: FOAM_EXT_LIBBIN not set"
     echo "    Check the OpenFOAM entries in your dot-files and source them."
     exit 1
+}
 }
 
 # Compile wmake support applications
@@ -26,7 +28,8 @@ if [ -d "$WM_THIRD_PARTY_DIR" ]
 then
     $WM_THIRD_PARTY_DIR/Allwmake
 else
-    echo "Allwmake: no ThirdParty directory found - skipping"
+    [ "$(uname -s)" = "Darwin" ] \
+        || echo "Allwmake: no ThirdParty directory found - skipping"
 fi
 
 # Compile OpenFOAM libraries and applications

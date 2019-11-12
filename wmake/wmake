@@ -122,6 +122,11 @@ useAllCores()
         WM_NCOMPPROCS=1
     fi
 
+    if [ -n "$(sysctl -en hw.ncpu)" ]
+    then
+        WM_NCOMPPROCS=$(sysctl -en hw.ncpu)
+    fi
+
     export WM_NCOMPPROCS
 }
 

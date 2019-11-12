@@ -1,0 +1,69 @@
+# CGAL configuration for OS X
+
+if [ -n "$SOURCE_CGAL_VERSIONS_ONLY" ]
+then
+    . $WM_PROJECT_DIR/etc/config.sh/mac/functions
+    if [ "x$(_foamBrew)" = "xY" ]
+    then
+        _prefix=$(_foamBrewPrefix)
+        boost_version="boost-$(_foamGetPackageVersion boost)"
+        export BOOST_ARCH_PATH="$_prefix/opt/boost"
+        unset _prefix
+    elif [ "x$(_foamPort)" = "xY" ]
+    then
+        _prefix=$(_foamPortPrefix)
+        boost_version=$(_foamGetPackageVersion boost)
+        export BOOST_ARCH_PATH="$_prefix"
+        unset _prefix
+    else
+        boost_version=boost-unknown
+        export BOOST_ARCH_PATH=/usr/local
+    fi
+    unset boost_version
+    . $WM_PROJECT_DIR/etc/config.sh/mac/functions
+else
+    if [ "x$(_foamBrew)" = "xY" ]
+    then
+        _prefix=$(_foamBrewPrefix)
+
+        boost_version="boost-$(_foamGetPackageVersion boost)"
+        cgal_version="CGAL-$(_foamGetPackageVersion cgal)"
+
+        export BOOST_ARCH_PATH="$_prefix/opt/boost"
+        export CGAL_ARCH_PATH="$_prefix/opt/cgal"
+        export GMP_ARCH_PATH="$_prefix/opt/gmp"
+        export MPFR_ARCH_PATH="$_prefix/opt/mpfr"
+
+        unset _prefix
+    elif [ "x$(_foamPort)" = "xY" ]
+    then
+        _prefix=$(_foamPortPrefix)
+
+        boost_version=$(_foamGetPackageVersion boost)
+        cgal_version=$(_foamGetPackageVersion cgal)
+
+        export BOOST_ARCH_PATH="$_prefix"
+        export CGAL_ARCH_PATH="$_prefix"
+        export GMP_ARCH_PATH="$_prefix"
+        export MPFR_ARCH_PATH="$_prefix"
+
+        unset _prefix
+    else
+        boost_version=boost-unknown
+        cgal_version=CGAL-unknown
+
+        export BOOST_ARCH_PATH=/usr/local
+        export CGAL_ARCH_PATH=/usr/local
+    fi
+
+    if [ "$FOAM_VERBOSE" -a "$PS1" ]
+    then
+        echo "Using CGAL and boost" 1>&2
+        echo "    $cgal_version at $CGAL_ARCH_PATH" 1>&2
+        echo "    $boost_version at $BOOST_ARCH_PATH" 1>&2
+    fi
+    unset boost_version cgal_version
+fi
+
+
+# vim: set ft=sh:

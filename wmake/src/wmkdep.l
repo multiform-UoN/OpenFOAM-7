@@ -461,6 +461,7 @@ char* substitutePath(char* pathName)
         int i;
         for (i = 0; i < nReplacements; i++)
         {
+	    if (replacements[i].searchLen == 1) continue;
             pathName = strRep(pathName, &replacements[i]);
         }
     }

@@ -1,0 +1,133 @@
+# Additional functions for OS X
+
+if [ -z "$WM_BASH_FUNCTIONS_MAC" ]
+then
+    WM_BASH_FUNCTIONS_MAC=loaded
+
+    # Prefix to DYLD_LIBRARY_PATH
+    _foamAddLib ()
+    {
+        while [ $# -ge 1 ]
+        do
+            export DYLD_LIBRARY_PATH=$1:$DYLD_LIBRARY_PATH
+            shift
+        done
+    }
+
+    _foamBrew ()
+    {
+        if $(which -s brew)
+        then
+            echo Y
+            return 0
+        else
+            echo N
+            return 1
+        fi
+    }
+
+    _foamPort ()
+    {
+        if $(which -s port)
+        then
+            echo Y
+            return 0
+        else
+            echo N
+            return 1
+        fi
+    }
+
+    _foamPortPrefix ()
+    {
+        echo "$(dirname $(dirname $(which port)))"
+    }
+
+    _foamBrewPrefix ()
+    {
+        echo $(brew --prefix)
+    }
+
+    _foamGetPackageVersion ()
+    {
+        local version="?"
+        local ret=0
+        local pkg="$1"
+
+        if [ "x$(_foamBrew)" = "xY" ]
+        then
+            local prefix="$(_foamBrewPrefix)"
+            if [ -d "$prefix/opt/${pkg}64" -a "$WM_LABEL_SIZE" -eq 64 ]
+            then
+                version="$(basename $(readlink "$prefix/opt/${pkg}64"))"
+            elif [ -d "$prefix/opt/$pkg" ]
+            then
+                version="$(basename $(readlink "$prefix/opt/$pkg"))"
+            else
+                ret=1
+            fi
+        elif [ "x$(_foamPort)" = "xY" ]
+        then
+            version="0.0.x"
+        else
+            ret=1
+        fi
+        echo $version
+        return $ret
+    }
+
+    _foamGetPackageArchPath ()
+    {
+        local arch_path="/usr/local"
+        local ret=0
+        local pkg="$1"
+        if [ "x$(_foamBrew)" = "xY" ]
+        then
+            local prefix="$(_foamBrewPrefix)"
+            if [ -d "$prefix/opt/${pkg}64" -a "$WM_LABEL_SIZE" -eq 64 ]
+            then
+                arch_path="$prefix/opt/${pkg}64"
+            elif [ -d "$prefix/opt/$pkg" ]
+            then
+                arch_path="$prefix/opt/$pkg"
+            else
+                ret=1
+            fi
+        elif [ "x$(_foamPort)" = "xY" ]
+        then
+            arch_path="$(_foamPortPrefix)"
+        else
+            ret=1
+        fi
+        echo $arch_path
+        return $ret
+    }
+
+    _foam_increase_max_open_files ()
+    {
+        # Default value
+        local lim=4096
+
+        # Reset if parameter passed
+        [ -n "$1" ] && lim="$1"
+
+        # Silencing the errors
+        local current_limit=$(ulimit -n)
+        if [ "$current_limit" = "unlimited" ]
+        then
+            return 0
+        elif [ "$current_limit" -lt "$lim" ]
+        then
+            ulimit -n "$lim" > /dev/null 2>&1
+            return 0
+        fi
+        return 0
+    }
+else
+    unset WM_BASH_FUNCTIONS_MAC
+    unset _foamAddLib _foamBrew _foamPort _foamPortPrefix _foamBrewPrefix \
+        _foamGetPackageVersion _foamGetPackageArchPath \
+        _foam_increase_max_open_files
+fi
+
+# vim: set ft=sh:

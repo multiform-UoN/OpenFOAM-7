@@ -7,12 +7,14 @@
 EXE_INC = \
     $(PFLAGS) $(PINC) \
     -I$(SCOTCH_ARCH_PATH)/include \
-    -I/usr/include/scotch \
     -I../decompositionMethods/lnInclude
 
 LIB_LIBS = \
     -L$(SCOTCH_ARCH_PATH)/lib \
-    -L$(FOAM_EXT_LIBBIN) \
     -lscotch \
-    -lscotcherrexit \
-    -lrt
+    -lscotcherrexit
+
+ifneq ("$(shell uname -s)","Darwin")
+EXE_INC += -I/usr/include/scotch
+LIB_LIBS += -L$(FOAM_EXT_LIBBIN) -lrt
+endif

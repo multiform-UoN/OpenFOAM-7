@@ -68,6 +68,11 @@ bool read(const char*, int64_t&);
 Istream& operator>>(Istream&, int64_t&);
 Ostream& operator<<(Ostream&, const int64_t);
 
+#if defined(darwin64)
+Istream& operator>>(Istream& is, long& val);
+Ostream& operator<<(Ostream& os, const long val);
+#endif
+
 inline void writeEntry(Ostream& os, const int64_t value)
 {
     os << value;

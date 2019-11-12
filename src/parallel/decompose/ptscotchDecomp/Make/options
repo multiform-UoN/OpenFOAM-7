@@ -3,15 +3,17 @@
 EXE_INC = \
     $(PFLAGS) $(PINC) \
     -I$(FOAM_SRC)/Pstream/mpi/lnInclude \
-    -I$(SCOTCH_ARCH_PATH)/include/$(FOAM_MPI) \
-    -I$(SCOTCH_ARCH_PATH)/include \
-    -I/usr/include/scotch \
     -I../decompositionMethods/lnInclude
 
 LIB_LIBS = \
-    -L$(SCOTCH_ARCH_PATH)/lib \
-    -L$(FOAM_EXT_LIBBIN)/$(FOAM_MPI) \
     -lptscotch \
     -lptscotcherrexit \
-    -lscotch \
-    -lrt
+    -lscotch
+
+ifneq ("$(SO)","dylib")
+EXE_INC += -I$(SCOTCH_ARCH_PATH)/include/$(FOAM_MPI) -I/usr/include/scotch
+LIB_LIBS += -L$(FOAM_EXT_LIBBIN)/$(FOAM_MPI) -lrt
+else
+EXE_INC += -I$(SCOTCH_ARCH_PATH)/include
+LIB_LIBS += -L$(SCOTCH_ARCH_PATH)/lib
+endif

@@ -96,5 +96,13 @@ Foam::Ostream& Foam::operator<<(Ostream& os, const uint64_t i)
     return os;
 }
 
+#if defined(darwin64)
+Foam::Ostream& Foam::operator<<(Ostream& os, const unsigned long val)
+{
+    os << uint64_t(val);
+    return os;
+}
+#endif
+
 
 // ************************************************************************* //
