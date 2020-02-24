@@ -1,0 +1,3 @@
+CahnHiliardFoam.C
+
+EXE = $(FOAM_APPBIN)/CahnHiliardFoam

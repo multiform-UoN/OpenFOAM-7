@@ -210,7 +210,6 @@ then
     fi
 fi
 
-
 # Clean environment paths again. Only remove duplicates
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #- Clean PATH
@@ -254,5 +253,8 @@ _foam_on_macos && . $WM_PROJECT_DIR/etc/config.sh/mac/functions
 # Source the bash completion file:
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 [ "$BASH" ] && . $WM_PROJECT_DIR/etc/config.sh/bash_completion
+
+. "$WM_PROJECT_DIR/bin/tools/CleanFunctions"
+#. "$WM_PROJECT_DIR/bin/tools/RunFunctions"
 
 #------------------------------------------------------------------------------
