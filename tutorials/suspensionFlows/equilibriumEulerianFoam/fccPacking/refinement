@@ -1,0 +1,4 @@
+refmin 0;
+refmax 0;
+tolmerge 0.00001;
+#inputMode merge

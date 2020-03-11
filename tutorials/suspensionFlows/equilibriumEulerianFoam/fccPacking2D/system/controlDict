@@ -1,0 +1,81 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2.2.2                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      controlDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+application     simpleFoam;
+
+startFrom       startTime;
+
+startTime       0;
+
+stopAt          endTime;
+
+endTime         10000;
+
+deltaT          1;
+
+writeControl    timeStep;
+
+writeInterval   200;
+
+purgeWrite      1;
+
+writeFormat     binary;
+
+writePrecision  10;
+
+writeCompression off;
+
+timeFormat      general;
+
+timePrecision   6;
+
+runTimeModifiable true;
+
+functions
+{
+/*intvel
+    {
+        type            volumeIntegrate;
+        functionObjectLibs ( "libsimpleSwakFunctionObjects.so" );
+        enabled         true;
+        outputControlMode   timeStep;
+        outputInterval      1;
+        verbose      true;
+        fields
+        (
+            U
+        );
+    }
+	flow_minX
+	{
+		type	faceSource;
+		functionObjectLibs ("libfieldFunctionObjects.so");
+		enabled	true;
+		outputControl	timeStep;
+		outputInterval	1;
+		log	true;
+		valueOutput	false;
+		source	patch;
+		operation	areaIntegrate;
+		fields (U);
+		sourceName minX;
+	}
+*/
+}
+
+
+// ************************************************************************* //

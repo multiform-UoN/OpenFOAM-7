@@ -1,0 +1,3 @@
+oildensityFoam.C
+
+EXE = $(FOAM_APPBIN)/oildensityFoam

@@ -1,0 +1,38 @@
+#!/bin/bash
+cd ${0%/*} || exit 1    # run from this directory
+
+. $WM_PROJECT_DIR/bin/tools/RunFunctions
+
+# Get application name
+application=`getApplication`
+
+echo "Meshing"
+foamJob -screen blockMesh
+foamJob -screen decomposePar
+foamJob -screen -parallel snappyHexMesh -overwrite
+cp system/createPatchDict3D system/createPatchDict
+foamJob -screen -parallel createPatch -overwrite
+foamJob -screen -parallel renumberMesh -overwrite
+foamJob -screen reconstructParMesh -mergeTol 1e-5 -constant
+
+echo "Solving"
+cp -r 0_3d 0
+
+if [ $1 != "None" ]
+then
+  foamJob -screen mapFields $2 -consistent -sourceTime latestTime
+fi
+
+foamJob -screen decomposePar -fields
+
+foamJob -screen -parallel $application
+
+#if [ $1 != "1" ]
+#then
+#  foamJob -screen reconstructPar -latestTime
+#fi
+
+touch paraview.foam
+./qoi.sh log
+
+# ----------------------------------------------------------------- end-of-file

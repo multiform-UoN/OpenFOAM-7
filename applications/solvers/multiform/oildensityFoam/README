@@ -1,0 +1,11 @@
+Application
+    oilWaxFoam
+
+Description
+    Transient solver for incompressible, suspensions flow with formation of low Stokes
+    number solid with concentration dependent rheology and heat transfer.
+
+
+Application Written by:
+
+Ismail El Mellas, Nottingham (2019)

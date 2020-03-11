@@ -1,0 +1,12 @@
+set logscale y;
+set term wxt 0;
+plot "< cat log | grep Uy | cut -d' ' -f9 | tr -d ','" with lines title 'Uy';
+replot "< cat log | grep Ux | cut -d' ' -f9 | tr -d ','" with lines title 'Ux';
+replot "< cat log | grep Uz | cut -d' ' -f9 | tr -d ','" with lines title 'Uz';
+replot "< cat log | grep 'Solving for p' | cut -d' ' -f9 | tr -d ','" every 2 with lines title 'pressure';
+set term wxt 1;
+plot "< cat log | grep areaAverage | cut -d' ' -f9 | tr -d ',('" with lines title 'flow rate';
+set term wxt 2;
+plot "< cat log | grep continuity | cut -d' ' -f9 | tr -d ','" with lines title 'continuity';
+pause 50;
+reread;

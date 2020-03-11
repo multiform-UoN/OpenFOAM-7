@@ -1,0 +1,109 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2.2.2                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      fvSolution;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+#include "tolerance"
+solvers
+{
+
+    c
+    {
+        solver          GAMG;
+        smoother        DILU;
+        tolerance       1e-10;
+        relTol          1e-3;
+    }
+
+    cFinal
+    {
+        $c;
+        relTol 1e-4;
+    }
+
+    p
+    {
+        solver          GAMG;
+        tolerance       1e-9;
+        relTol          1e-3;
+        minIter         3;              // a minimum number of iterations
+        maxIter         100;            // limitation of iterions number
+        smoother        FDIC;            // setting for GAMG
+        nPreSweeps      1;              // 1 for pd, set to 0 for all other!
+        nPostSweeps     2;              // 2 is fine
+        nFinestSweeps   2;              // 2 is fine
+        scaleCorrection true;           // true is fine
+        directSolveCoarsestLevel false; // false is fine
+        cacheAgglomeration on;          // on is fine; set to off, if dynamic
+                                        // mesh refinement is used!
+        nCellsInCoarsestLevel 500;      // 500 is fine,
+                                        // otherwise sqrt(number of cells)
+        agglomerator    faceAreaPair;
+        mergeLevels     1;
+    }
+
+    pFinal
+    {
+        $p;
+        relTol          1e-4;
+    }
+
+    U
+    {
+        type            coupled;  // optional, defaults to segregated 
+        solver          PBiCCCG; 
+        preconditioner  DILU; 
+        tolerance       (1e-9 1e-9 1e-9); 
+        relTol          (1e-2 1e-2 1e-2); 
+//        solver          smoothSolver;
+//        smoother        symGaussSeidel;
+//        nSweeps         2;
+//        tolerance       1e-9;
+//        relTol          1e-3;
+    }
+
+    UFinal	 
+    {
+        $U;
+        relTol          1e-4;
+    }
+
+}
+
+PIMPLE
+{
+    momentumPredictor   off;
+    nOuterCorrectors    1;
+    nCorrectors         4;
+    nNonOrthogonalCorrectors 0;
+    pRefCell            0;
+    pRefValue           0;
+    turbOnFinalIterOnly no;
+    residualControl
+    {
+        ".*"           1e-5;
+    }
+}
+
+relaxationFactors
+{
+    equations
+    {
+        ".*"   0.95;
+    }
+}
+
+
+// ************************************************************************* //

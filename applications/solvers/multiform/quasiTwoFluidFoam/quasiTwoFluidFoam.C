@@ -1,0 +1,148 @@
+/*---------------------------------------------------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     |
+    \\  /    A nd           | Copyright (C) 2015-2019
+     \\/     M anipulation  | Matteo Icardi, Federico Municchi
+-------------------------------------------------------------------------------
+License
+    This file is derivative work of OpenFOAM.
+
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
+    ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+    FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+    for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
+
+
+
+Application
+    quasiTwoFluidFoam
+
+Description
+    Steady solver for incompressible, suspensions flow of particles.
+    Somewhere in between a TFM and equilibriumEulerianFoam
+
+\*---------------------------------------------------------------------------*/
+
+#include "fvCFD.H"
+#include "pimpleControl.H"
+#include "CorrectPhi.H"
+#include "fvOptions.H"
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+int main(int argc, char *argv[])
+{
+#   include "postProcess.H"
+
+#   include "setRootCaseLists.H"
+#   include "createTime.H"
+#   include "createTimeControls.H"
+#   include "createMesh.H"
+#   include "initContinuityErrs.H"
+#   include "createFields.H"
+#   include "createUfIfPresent.H"
+#   include "CourantNo.H"
+#   include "setInitialDeltaT.H"
+
+    pimpleControl pimple(mesh);
+
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+    Info<< "\nStarting time loop\n" << endl;
+
+    while (runTime.run())
+    {
+
+#       include "CourantNo.H"
+#       include "setDeltaT.H"
+
+        runTime++;
+
+        Info<< "Time = " << runTime.timeName() << nl << endl;
+
+        // --- Pressure-velocity PIMPLE corrector loop
+        while (pimple.loop())
+        {
+
+            volTensorField Gr(fvc::grad(U));
+
+            //- Generalised suspension viscosity
+            //- Standard Models
+            //- --------------------------------
+            //  Morris Boulay (1999)
+            //  Ca = 0
+            //  Cb = 2.5
+            //  Cc = 0.1
+            //
+            //  Maron and Sisko (1957)
+            //  Ca = -1
+            //  Cb = 0
+            //  Cc = 1
+            //- --------------------------------
+
+            nu = nu0 *
+            (
+                Ca
+              + Cb*c*pow( (scalar(1.0)- (c/cm)), -scalar(1.0))
+              + Cc*pow( (scalar(1.0)- (c/cm)), -scalar(2.0))
+            );
+
+            #include "UEqn.H"
+
+            while(pimple.correct())
+            {
+              #include "pEqn.H"
+
+              #include "updatePhiSlipRegularised.H"
+
+              const surfaceScalarField phic
+                ("phi",
+                  phi+phislip
+                );
+
+              #include "cEqn.H"
+
+            }
+
+
+        } // End corrector
+        // -- DOUBLE CHECK RESIDUALS
+        // Info << "Continuity " << fvc::domainIntegrate(pow(fvc::div(U+c*Uslip),2))/gSum(mesh.V()) << endl;
+        // Info << "Stokes flow " << fvc::domainIntegrate(   pow(mag(
+        //    fvc::ddt(U)
+        //    +
+        //    fvc::div(phi*fvc::interpolate(U))
+        //    -
+        //    fvc::laplacian(nu, U)
+        //    -
+        //    fvc::div(nu*dev2(fvc::grad(U)().T()))
+        //    )
+        //    /
+        //    mag(fvc::grad(p))
+        //    - scalar(1)
+        //  ,2))/gSum(mesh.V()) << endl;
+
+        runTime.write();
+
+        Info<< "ExecutionTime = " << runTime.elapsedCpuTime() << " s"
+            << "  ClockTime = " << runTime.elapsedClockTime() << " s"
+            << nl << endl;
+    }
+
+    Info<< "End\n" << endl;
+
+    return(0);
+}
+
+
+// ************************************************************************* //
