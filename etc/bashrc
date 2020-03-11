@@ -72,7 +72,15 @@ export WM_COMPILER_TYPE=system
 
 #- Compiler:
 #    WM_COMPILER = Gcc | Gcc48 ... Gcc62 | Clang | Icc
+
+if [ "$(uname -s)" = "Darwin" ]
+then
 export WM_COMPILER=Clang
+else
+export WM_COMPILER=Gcc
+fi 
+
+
 unset WM_COMPILER_ARCH WM_COMPILER_LIB_ARCH
 
 #- Memory addressing:
