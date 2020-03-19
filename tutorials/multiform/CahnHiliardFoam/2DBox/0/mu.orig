@@ -22,25 +22,25 @@ boundaryField
 {
     inlet
     {
-        type            zeroGradient;
+        type            cyclic;
         value           uniform 0;
     }
 
     outlet
     {
-        type            zeroGradient;
+        type            cyclic;
         value           uniform 0;
     }
 
     up
     {
-        type            zeroGradient;
+        type            cyclic;
         value           uniform 0;
     }
 
     down
     {
-        type            zeroGradient;
+        type            cyclic;
         value           uniform 0;
     }
 

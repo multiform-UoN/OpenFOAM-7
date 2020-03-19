@@ -31,7 +31,7 @@ Solves Cahn Hilliard Model
 
 #include "fvCFD.H"
 #include "fvOptions.H"
-#include "simpleControl.H"
+#include "pimpleControl.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -42,31 +42,44 @@ int main(int argc, char *argv[])
   #include "createTime.H"
   #include "createMesh.H"
 
-  simpleControl simple(mesh);
+  pimpleControl pimple(mesh);
 
   #include "createFields.H"
 
   // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+  // -------------- HARD-CODED INITIAL CONDITIONS
+  alpha = alpha * scalar(0.1)
+        *
+        Foam::cos(scalar(2)*pi*mesh.C().component(0))
+        *
+        Foam::cos(scalar(2)*pi*mesh.C().component(1));
+  alpha.correctBoundaryConditions();
+  // --------------
 
   Info<< "\nCalculating Cahn-Hiliard solution\n" << endl;
 
   label muRefCell = 0;
   scalar muRefValue = 0.0;
 
-  #include "updatePot.H"
-  #include "updateMu.H"
+  Info << "Initial Energy calculation" << endl;
   #include "computeEnergy.H"
 
-  while (simple.loop(runTime))
+  Info << "Start time loop" << endl;
+
+  while (runTime.loop())
   {
     Info<< "Time = " << runTime.timeName() << nl << endl;
 
-    const volScalarField mu0(mu);
+    Info << "Start internal loop" << endl;
 
-    while (simple.correctNonOrthogonal())
+    #include "updatePot.H"
+    #include "updateMu.H"
+
+    while (pimple.loop())
     {
 
-      for(int i=1; i<10; i++)
+      while (pimple.correctNonOrthogonal())
       {
       fvScalarMatrix alphaEqn
       (
@@ -75,30 +88,31 @@ int main(int argc, char *argv[])
         - fvm::Sp(pot_imp,alpha) - (pot-pot_imp*alpha) + mu
       );
 
+      alphaEqn.relax();
       alphaEqn.solve();
 
       #include "updatePot.H"
 
-      #include "computeEnergy.H"
-
       }
 
 
-      for(int i=1; i<10; i++)
+      while (pimple.correctNonOrthogonal())
       {
       fvScalarMatrix muEqn
       (
         fvc::ddt(alpha) - fvm::laplacian(M/scalar(2), mu)
         ==
         //fvOptions(mu)
-        M/scalar(2)*fvc::laplacian(mu0)
+        M/scalar(2)*fvc::laplacian(mu.prevIter())
       );
 
       //fvOptions.constrain(muEqn);
-      //muEqn.setReference(muRefCell, muRefValue);
+      muEqn.setReference(muRefCell, muRefValue);
+      muEqn.relax();
       muEqn.solve();
       //fvOptions.correct(mu);
       }
+
       #include "computeEnergy.H"
 
     }

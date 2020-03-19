@@ -13,6 +13,8 @@ volScalarField alpha
     mesh
 );
 
+alpha.storePrevIter();
+
 
 Info<< "Reading transportProperties\n" << endl;
 
@@ -36,6 +38,14 @@ dimensionedScalar M
     transportProperties.lookup("M")
 );
 
+
+Info<< "Reading free energy constant W0\n" << endl;
+
+dimensionedScalar W0
+(
+    transportProperties.lookup("W0")
+);
+
 Info<< "Reading diffuse interface length epsilon\n" << endl;
 
 dimensionedScalar epsilon
@@ -46,7 +56,7 @@ dimensionedScalar epsilon
 #include "createFvOptions.H"
 
 
-Info<< "Creating field mu (chemical potential) \n" << endl;
+Info<< "\nCreating field mu (chemical potential)" << endl;
 
 volScalarField pot
 (
@@ -58,7 +68,7 @@ volScalarField pot
         IOobject::NO_READ,
         IOobject::NO_WRITE
     ),
-    scalar(100) * alpha * (alpha*alpha-scalar(1) )
+    W0 * alpha * ( alpha*alpha-scalar(1) )
 );
 
 volScalarField pot_imp
@@ -71,7 +81,7 @@ volScalarField pot_imp
         IOobject::NO_READ,
         IOobject::NO_WRITE
     ),
-    scalar(100) * (scalar(3)*alpha*alpha-scalar(1) )
+    W0 * ( scalar(3)*alpha*alpha-scalar(1) )
 );
 
 volScalarField mu
@@ -85,4 +95,9 @@ volScalarField mu
         IOobject::AUTO_WRITE
     ),
     mesh
+    //pot - epsilon*epsilon * fvc::laplacian(alpha)
 );
+
+mu.storePrevIter();
+
+const dimensionedScalar pi("pi",dimless/dimLength,M_PI);
