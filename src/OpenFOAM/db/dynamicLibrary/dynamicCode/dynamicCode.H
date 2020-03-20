@@ -219,7 +219,11 @@ public:
         //  Corresponds to codeRoot()/libSubDir()/lib\<codeName\>.so
         fileName libPath() const
         {
+            #if defined(darwin64)
+            return codeRoot_/libSubDir_/"lib" + codeName_ + ".dylib";
+            #else
             return codeRoot_/libSubDir_/"lib" + codeName_ + ".so";
+            #endif
         }
 
         //- Path for specified code name relative to \$FOAM_CASE

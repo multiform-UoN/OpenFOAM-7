@@ -29,7 +29,9 @@ License
 
 #include <signal.h>
 #include <unistd.h>
+#if ! defined(darwin64)
 #include <sys/sysmacros.h>
+#endif
 
 // * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
 

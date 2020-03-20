@@ -1,0 +1,147 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  6
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      fvSolution;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+solvers
+{
+    psi
+    {
+        solver          GAMG;
+        smoother        DILU;
+        tolerance       1e-10;
+        relTol          0;
+    }
+
+    psiFinal
+    {
+        $psi;
+        relTol 0;
+    }
+    lamda
+    {
+        solver          GAMG;
+        smoother        DILU;
+        tolerance       1e-10;
+        relTol          0;
+    }
+
+    lamdaFinal
+    {
+        $lamda;
+        relTol 1e-6;
+    }
+    p
+    {
+        solver          PCG;
+        preconditioner  DIC;
+        smoother        DIC;
+        tolerance       1e-10;
+        relTol          0;
+    }
+
+    "(U.*|sigma)"
+    {
+        solver          GAMG;
+        smoother        DILU;
+        tolerance       1e-10;
+        relTol          0;
+    }
+
+    pFinal
+    {
+        $p;
+        relTol          0;
+    }
+
+    "(U.*|sigma)Final"
+    {
+        $U;
+        relTol          0;
+    }
+
+    c
+    {
+        solver          GAMG;
+        smoother        DILU;
+        tolerance       1e-10;
+        relTol          0;
+    }
+
+    cFinal
+    {
+        $c;
+        relTol 1e-6;
+    }
+
+    T
+    {
+        solver          GAMG;
+        smoother        DILU;
+        tolerance       1e-10;
+        relTol          0;
+    }
+
+    TFinal
+    {
+        $T;
+        relTol 1e-6;
+    }
+    "(k.*|epsilon.*)"
+    {
+        solver          GAMG;
+        smoother        DILU;
+        tolerance       1e-07;
+        relTol          0;
+    }
+
+}
+
+PIMPLE
+{
+    consistent   yes;
+    momentumPredictor   on;
+    nOuterCorrectors    5;
+    nCorrectors         3;
+    nNonOrthogonalCorrectors 0;
+    pRefCell            0;
+    pRefValue           0;
+    turbOnFinalIterOnly no;
+    residualControl
+    {
+        ".*"           1e-5;
+        "(k|epsilon)"  1e-3;
+    }
+}
+
+relaxationFactors
+{
+
+    fields
+    {
+        "psi"      1.0;
+        "psiFinal" 1.0;
+    }
+    equations
+    {
+        "k|epsilon"   0.95;
+        "p"           0.95;
+        "U"           0.95;
+        "T"           0.95;
+        "c"           1.0;
+        "psi"         1.0;
+    }
+}
+
+// ************************************************************************* //

@@ -64,9 +64,14 @@ error() {
 
 plotFileHeader() {
     cat<<EOF
-set term $gpterminal $size
+selected_terminal = 'x11'
+for [t in "wxt qt"] if (strstrt(GPVAL_TERMINALS, t)) selected_terminal = t
+set term selected_terminal $gpterminal $size
 $logscale
+$explabels
 $yrange
+set size ratio 0.62111801242236
+set grid
 set ytics format "$yticFormat"
 set title "$title"
 set xlabel "$xlabel"
@@ -92,13 +97,16 @@ isInteger() {
 idle=60
 refresh=10
 logscale=""
+explabels=""
 yrange=""
 yticFormat="%g"
 title="Data Monitoring"
 size=""
-gpterminal='x11 1 font "helvetica,17" linewidth 1.5 persist noraise'
+gpterminal='1 font "helvetica,17" linewidth 1.5 persist noraise'
 
 command -v gnuplot >/dev/null 2>&1 || error "Gnuplot not installed"
+STAT="stat --format=%Y"
+[ "$(uname -s)" = "Darwin" ] && STAT="stat -f %m"
 
 # parse options
 while [ "$#" -gt 0 ]
@@ -114,6 +122,7 @@ do
         ;;
     -l | -logscale)
         logscale="set logscale y"
+	explabels='set format y "%.1g"'
         yticFormat="%1.e"
         shift 1
         ;;
@@ -202,7 +211,7 @@ pid=$!
 
 while true
 do
-    mod_time=$(stat --format=%Y "$file")
+    mod_time=$($STAT "$file")
     idle_ago=$(( $(date +%s) - idle ))
     test "$mod_time" -gt "$idle_ago" || break
     sleep "$refresh"

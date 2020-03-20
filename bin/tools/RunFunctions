@@ -28,6 +28,17 @@
 #     Miscellaneous functions for running tutorial cases
 #------------------------------------------------------------------------------
 
+isSIPEnabled()
+{
+    $(which -s csrutil) && {
+    [ $(csrutil status | awk '{print $5}' | tr -d ".") = "enabled" ] \
+        && return 0
+    }
+    return 1
+}
+
+[ "$(uname -s)" = "Darwin" ] && isSIPEnabled && . $WM_PROJECT_DIR/etc/bashrc
+
 isTest()
 {
     for i in "$@"; do

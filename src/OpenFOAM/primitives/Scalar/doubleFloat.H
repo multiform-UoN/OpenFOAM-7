@@ -31,6 +31,46 @@ License
 
 #include <cmath>
 
+#if defined(darwin64)
+inline float j0f(float x) { return float(j0(double(x)));}
+inline float j1f(float x) { return float(j1(double(x)));}
+inline float y0f(float x) { return float(y0(double(x)));}
+inline float y1f(float x) { return float(y1(double(x)));}
+inline float jnf(const int n, const float s) { return float(jn(n, double(s))); }
+inline float ynf(const int n, const float s) { return float(yn(n, double(s))); }
+
+inline long double j0l(long double x)
+{
+    return static_cast<long double>(j0(static_cast<double>(x)));
+}
+
+inline long double j1l(long double x)
+{
+    return static_cast<long double>(j1(static_cast<double>(x)));
+}
+
+inline long double y0l(long double x)
+{
+    return static_cast<long double>(y0(static_cast<double>(x)));
+}
+
+inline long double y1l(float x)
+{
+    return static_cast<long double>(y1(static_cast<double>(x)));
+}
+
+inline long double jnl(const int n, const long double s)
+{
+    return static_cast<long double>(jn(n, static_cast<double>(s)));
+}
+
+inline long double ynl(const int n, const long double s)
+{
+    return static_cast<long double>(yn(n, static_cast<double>(s)));
+}
+
+#endif
+
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 namespace Foam

@@ -37,6 +37,12 @@ License
     #include <malloc.h>
 #endif
 
+#if defined(darwin64)
+#include <xmmintrin.h>
+#include <sys/mman.h>
+#include <unistd.h>
+#endif
+
 #include <limits>
 
 // * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
@@ -50,6 +56,26 @@ void Foam::sigFpe::fillNan(UList<scalar>& lst)
 
 bool Foam::sigFpe::mallocNanActive_ = false;
 
+#if defined(darwin64)
+void *(*Foam::sigFpe::oldMalloc_)(struct _malloc_zone_t *zone, size_t size)
+    = NULL;
+
+void *Foam::sigFpe::nanMalloc_(struct _malloc_zone_t *zone, size_t size)
+{
+    void *result;
+
+    result = oldMalloc_(zone, size);
+
+    if (mallocNanActive_)
+    {
+        UList<scalar> lst(reinterpret_cast<scalar*>(result),
+                          size/sizeof(scalar));
+        fillNan(lst);
+    }
+
+    return result;
+}
+#endif
 
 #ifdef LINUX
 extern "C"
@@ -84,7 +110,7 @@ void* Foam::sigFpe::mallocNan(size_t size)
 #endif
 
 
-#ifdef LINUX_GNUC
+#if defined(LINUX_GNUC) || defined(darwin64)
 void Foam::sigFpe::sigHandler(int)
 {
     // Reset old handling
@@ -120,7 +146,7 @@ Foam::sigFpe::~sigFpe()
 {
     if (env("FOAM_SIGFPE"))
     {
-        #ifdef LINUX_GNUC
+        #if defined(LINUX_GNUC) || defined(darwin64)
         // Reset signal
         if
         (
@@ -137,9 +163,23 @@ Foam::sigFpe::~sigFpe()
 
     if (env("FOAM_SETNAN"))
     {
-        #ifdef LINUX
+        #if defined(LINUX) || defined(darwin64)
         // Disable initialization to NaN
         mallocNanActive_ = false;
+        #endif
+
+        #if defined(darwin64)
+        // Restoring old malloc handler
+        if (oldMalloc_ != NULL) {
+            malloc_zone_t *zone = malloc_default_zone();
+
+            if (zone != NULL)
+            {
+                mprotect(zone, getpagesize(), PROT_READ | PROT_WRITE);
+                zone->malloc = oldMalloc_;
+                mprotect(zone, getpagesize(), PROT_READ);
+            }
+        }
         #endif
     }
 }
@@ -160,15 +200,21 @@ void Foam::sigFpe::set(const bool verbose)
     {
         bool supported = false;
 
-        #ifdef LINUX_GNUC
+        #if defined(LINUX_GNUC) || defined(darwin64)
         supported = true;
 
+        #if defined(LINUX_GNUC)
         feenableexcept
         (
             FE_DIVBYZERO
           | FE_INVALID
           | FE_OVERFLOW
         );
+        #endif  // LINUX_GNUC
+        #if defined(darwin64)
+        _mm_setcsr(_MM_MASK_MASK &~
+                   (_MM_MASK_OVERFLOW|_MM_MASK_INVALID|_MM_MASK_DIV_ZERO));
+        #endif
 
         struct sigaction newAction;
         newAction.sa_handler = sigHandler;
@@ -200,8 +246,31 @@ void Foam::sigFpe::set(const bool verbose)
 
     if (env("FOAM_SETNAN"))
     {
-        #ifdef LINUX
+        #if defined(LINUX) || defined(darwin64)
         mallocNanActive_ = true;
+        #endif
+
+        #if defined(darwin64)
+        malloc_zone_t *zone = malloc_default_zone();
+
+        if (zone != NULL)
+        {
+            oldMalloc_ = zone->malloc;
+            if
+            (
+                mprotect(zone, getpagesize(), PROT_READ | PROT_WRITE) == 0
+            )
+            {
+                zone->malloc = nanMalloc_;
+                if
+                (
+                    mprotect(zone, getpagesize(), PROT_READ) == 0
+                )
+                {
+                    mallocNanActive_ = true;
+                }
+            }
+        }
         #endif
 
         if (verbose)

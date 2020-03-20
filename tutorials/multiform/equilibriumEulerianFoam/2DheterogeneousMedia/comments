@@ -1,0 +1,6 @@
+2D Heterogeneous medium
+
+Characteristics:
+
+- Distribution of grains created in matlab with a modified distmesh algorithm
+- Geometry and mesh created in gmsh

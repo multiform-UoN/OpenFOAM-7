@@ -99,5 +99,17 @@ Foam::Ostream& Foam::operator<<(Ostream& os, const int64_t i)
     return os;
 }
 
+#if defined(darwin64)
+Foam::Istream& Foam::operator>>(Istream& is, long& val)
+{
+    return operator>>(is, reinterpret_cast<int64_t&>(val));
+}
+
+Foam::Ostream& Foam::operator<<(Ostream& os, const long val)
+{
+    return (os << int64_t(val));
+}
+#endif
+
 
 // ************************************************************************* //

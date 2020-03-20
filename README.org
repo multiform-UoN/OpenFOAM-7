@@ -1,11 +1,5 @@
-#                            -*- mode: org; -*-
-#
-#+TITLE:     README for [[http://openfoam.org/download/source][OpenFOAM-7]]
-#+AUTHOR:               The OpenFOAM Foundation
-#+DATE:                     8th July 2019
-#+LINK:                  http://openfoam.org
-#+OPTIONS: author:nil ^:{}
-# Copyright (c) 2015-2019 OpenFOAM Foundation.
+This is a fork of OpenFOAM 7.0 with additional functionalities, solvers and utilities
+developed by the _MULTIFORM_ group at the University of Nottingham
 
 * About OpenFOAM
   OpenFOAM is a free, open source computational fluid dynamics (CFD) software

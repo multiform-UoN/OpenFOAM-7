@@ -142,7 +142,7 @@ void Foam::CV2D::insertSurfaceNearestPointPairs()
     Info<< "insertSurfaceNearestPointPairs: ";
 
     label nSurfacePointsEst =
-        min
+        std::min
         (
             number_of_vertices(),
             size_t(10*sqrt(scalar(number_of_vertices())))

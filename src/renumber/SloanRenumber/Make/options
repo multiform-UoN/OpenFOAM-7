@@ -5,7 +5,19 @@ EXE_INC = \
     -I$(LIB_SRC)/renumber/renumberMethods/lnInclude
 
 LIB_LIBS = \
-    -L$(BOOST_ARCH_PATH)/lib -lboost_system \
+    -L$(BOOST_ARCH_PATH)/lib \
     -lmeshTools \
     -ldecompositionMethods \
     -lrenumberMethods
+
+ifeq ("$(shell uname -s)","Darwin")
+SO = dylib
+else
+SO = so
+endif
+
+ifneq ("$(wildcard $(BOOST_ARCH_PATH)/lib/libboost_system-mt.$(SO))","")
+LIB_LIBS += -lboost_system-mt
+else
+LIB_LIBS += -lboost_system
+endif

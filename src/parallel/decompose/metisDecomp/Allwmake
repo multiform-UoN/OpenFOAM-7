@@ -4,12 +4,20 @@ cd ${0%/*} || exit 1    # Run from this directory
 # Parse arguments for library compilation
 . $WM_PROJECT_DIR/wmake/scripts/AllwmakeParseArguments
 
+_so_ext="so"
+_metis_conf="config.sh/metis"
+if [ "$(uname -s)" = "Darwin" ]
+then
+    _so_ext="dylib"
+    _metis_conf="config.sh/mac/metis"
+fi
+
 # get METIS_VERSION, METIS_ARCH_PATH
-if settings=`$WM_PROJECT_DIR/bin/foamEtcFile config.sh/metis`
+if settings=`$WM_PROJECT_DIR/bin/foamEtcFile $_metis_conf`
 then
     . $settings
     echo "    using METIS_ARCH_PATH=$METIS_ARCH_PATH"
-    if [ -r $METIS_ARCH_PATH/lib/libmetis.so ]
+    if [ -r $METIS_ARCH_PATH/lib/libmetis.$_so_ext ]
     then
         wmake $targetType
     fi
@@ -18,6 +26,8 @@ else
     echo "    Error: no config.sh/metis settings"
     echo
 fi
+
+unset _so_ext _metis_conf
 
 
 #------------------------------------------------------------------------------

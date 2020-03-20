@@ -1,0 +1,5 @@
+ndomains 8;
+ndomainsx 2;
+ndomainsy 2;
+ndomainsz 2;
+#inputMode merge

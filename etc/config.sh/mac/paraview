@@ -1,0 +1,18 @@
+_paraviews=(/Applications/[Pp][Aa][Rr][Aa][Vv][Ii][Ee][Ww]*.app)
+if test -d $_paraviews;
+then
+    [ "$FOAM_VERBOSE" -a "$PS1" ] && echo Using $_paraviews
+
+    paraview () {
+        local _paraviews=(/Applications/[Pp][Aa][Rr][Aa][Vv][Ii][Ee][Ww]*.app)
+        $_paraviews/Contents/MacOS/paraview "$@"
+    }
+
+    export -f paraview
+else
+    echo
+    echo "Please download binary Paraview release from"
+    echo "http://paraview.org and install it in /Applications"
+    echo "folder."
+    echo
+fi

@@ -54,6 +54,10 @@ SourceFiles
     #define LINUX_GNUC
 #endif
 
+#if defined(darwin64)
+#include <malloc/malloc.h>
+#endif
+
 #include "UList.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
@@ -75,11 +79,15 @@ class sigFpe
 
     // Static Data Members
 
-        #ifdef LINUX_GNUC
+        #if defined(LINUX_GNUC) || defined(darwin64)
         //- Handler for caught signals
         static void sigHandler(int);
         #endif
 
+        #if defined(darwin64)
+        static void *(*oldMalloc_)(struct _malloc_zone_t *zone, size_t size);
+        static void *nanMalloc_(struct _malloc_zone_t *zone, size_t size);
+        #endif
 
 public:
 
@@ -103,7 +111,7 @@ public:
         //- Flag to indicate mallocNan is enabled
         static bool mallocNanActive_;
 
-        #ifdef LINUX
+        #if defined(LINUX) || defined(darwin64)
         //- Malloc function which initializes to NaN
         static void* mallocNan(size_t size);
         #endif

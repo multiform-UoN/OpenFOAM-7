@@ -37,6 +37,9 @@ SourceFiles
 #define clockTime_H
 
 #include <sys/types.h>
+#if defined(darwin64)
+#include <sys/time.h>
+#endif
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
