@@ -14,10 +14,14 @@ FoamFile
     object      alpha;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+#include "../constant/initialConditions"
 
 dimensions      [0 0 0 0 0 0 0];
 
-internalField   uniform 1;
+//- Set initial condition
+// internalField uniform 1;
+internalField  $alphaInit;
+
 
 boundaryField
 {

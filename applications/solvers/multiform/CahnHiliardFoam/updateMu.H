@@ -1,2 +1,2 @@
-mu = pot - epsilon*epsilon * fvc::laplacian(alpha);
+mu = pot - sqr(epsilon) * fvc::laplacian(alpha);
 mu.correctBoundaryConditions();

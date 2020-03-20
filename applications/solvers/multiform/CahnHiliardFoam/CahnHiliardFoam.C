@@ -25,7 +25,7 @@ Application
 CahnHiliardFoam
 
 Description
-Solves Cahn Hilliard Model
+Solves Cahn-Hilliard equation
 
 \*---------------------------------------------------------------------------*/
 
@@ -37,96 +37,86 @@ Solves Cahn Hilliard Model
 
 int main(int argc, char *argv[])
 {
-  #include "setRootCaseLists.H"
+    #include "setRootCaseLists.H"
 
-  #include "createTime.H"
-  #include "createMesh.H"
+    #include "createTime.H"
+    #include "createMesh.H"
 
-  pimpleControl pimple(mesh);
+    pimpleControl pimple(mesh);
 
-  #include "createFields.H"
+    #include "createFields.H"
 
-  // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-  // -------------- HARD-CODED INITIAL CONDITIONS
-  alpha = alpha * scalar(0.1)
-        *
-        Foam::cos(scalar(2)*pi*mesh.C().component(0))
-        *
-        Foam::cos(scalar(2)*pi*mesh.C().component(1));
-  alpha.correctBoundaryConditions();
-  // --------------
+    // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-  Info<< "\nCalculating Cahn-Hiliard solution\n" << endl;
+    Info<< "\nCalculating Cahn-Hiliard solution\n" << endl;
 
-  label muRefCell = 0;
-  scalar muRefValue = 0.0;
+    label muRefCell = 0;
+    scalar muRefValue = 0.0;
 
-  Info << "Initial Energy calculation" << endl;
-  #include "computeEnergy.H"
+    Info << "Initial Energy calculation" << endl;
+    #include "computeEnergy.H"
 
-  Info << "Start time loop" << endl;
+    Info << "Start time loop" << endl;
 
-  while (runTime.loop())
-  {
-    Info<< "Time = " << runTime.timeName() << nl << endl;
-
-    Info << "Start internal loop" << endl;
-
-    #include "updatePot.H"
-    #include "updateMu.H"
-
-    while (pimple.loop())
+    while (runTime.loop())
     {
+        Info<< "Time = " << runTime.timeName() << nl << endl;
 
-      while (pimple.correctNonOrthogonal())
-      {
-      fvScalarMatrix alphaEqn
-      (
-        - fvm::laplacian(epsilon*epsilon, alpha)
-        ==
-        - fvm::Sp(pot_imp,alpha) - (pot-pot_imp*alpha) + mu
-      );
+        Info << "Start internal loop" << endl;
 
-      alphaEqn.relax();
-      alphaEqn.solve();
+        #include "updatePot.H"
+        #include "updateMu.H"
 
-      #include "updatePot.H"
+        while (pimple.loop())
+        {
 
-      }
+            while (pimple.correctNonOrthogonal())
+            {
+                fvScalarMatrix alphaEqn
+                (
+                    - fvm::laplacian(epsilon*epsilon, alpha)
+                    ==
+                    - fvm::Sp(pot_imp,alpha) - (pot-pot_imp*alpha) + mu
+                );
 
+                alphaEqn.relax();
+                alphaEqn.solve();
+            }
 
-      while (pimple.correctNonOrthogonal())
-      {
-      fvScalarMatrix muEqn
-      (
-        fvc::ddt(alpha) - fvm::laplacian(M/scalar(2), mu)
-        ==
-        //fvOptions(mu)
-        M/scalar(2)*fvc::laplacian(mu.prevIter())
-      );
+            #include "updatePot.H"
 
-      //fvOptions.constrain(muEqn);
-      muEqn.setReference(muRefCell, muRefValue);
-      muEqn.relax();
-      muEqn.solve();
-      //fvOptions.correct(mu);
-      }
+            while (pimple.correctNonOrthogonal())
+            {
+                fvScalarMatrix muEqn
+                (
+                    fvc::ddt(alpha) - fvm::laplacian(M/scalar(2), mu)
+                    ==
+                    //fvOptions(mu)
+                    M/scalar(2.)*fvc::laplacian(mu.prevIter())
+                );
 
-      #include "computeEnergy.H"
+                //fvOptions.constrain(muEqn);
+                muEqn.setReference(muRefCell, muRefValue);
+                muEqn.relax();
+                muEqn.solve();
+                //fvOptions.correct(mu);
+            }
 
+            #include "computeEnergy.H"
+
+        }
+
+        runTime.write();
+
+        Info<< "ExecutionTime = " << runTime.elapsedCpuTime() << " s"
+        << "  ClockTime = " << runTime.elapsedClockTime() << " s"
+        << nl << endl;
     }
 
-    runTime.write();
+    Info<< "End\n" << endl;
 
-    Info<< "ExecutionTime = " << runTime.elapsedCpuTime() << " s"
-    << "  ClockTime = " << runTime.elapsedClockTime() << " s"
-    << nl << endl;
-  }
-
-  Info<< "End\n" << endl;
-
-  return 0;
+    return 0;
 }
 
 

@@ -22,31 +22,43 @@ solvers
         solver          PCG;
         preconditioner  FDIC;
         tolerance       1e-12;
-        relTol          1e-3;
+        relTol          0;
     }
 }
 
 PIMPLE
 {
-    nNonOrthogonalCorrectors 3;
-    nOuterCorrectors 10; 
-    residualControl
+    nNonOrthogonalCorrectors 0;
+    nOuterCorrectors 100;
+    outerCorrectorResidualControl
     {
-    //    T       1e-10;
+        alpha
+        {
+            tolerance 1e-5;
+            relTol    0;
+        }
+
+        mu
+        {
+            tolerance 1e-5;
+            relTol    0;
+        }
+
     }
 }
 
 relaxationFactors
 {
-equations
-{
-".*"   0.9;
-}
+    equations
+    {
+       alpha    0.5;
+       mu       0.5;
+    }
 
-fields
-{
-".*"   1;
-}
+    fields
+    {
+        ".*"   1;
+    }
 
 }
 

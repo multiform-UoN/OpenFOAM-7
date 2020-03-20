@@ -13,9 +13,6 @@ volScalarField alpha
     mesh
 );
 
-alpha.storePrevIter();
-
-
 Info<< "Reading transportProperties\n" << endl;
 
 IOdictionary transportProperties
@@ -68,7 +65,7 @@ volScalarField pot
         IOobject::NO_READ,
         IOobject::NO_WRITE
     ),
-    W0 * alpha * ( alpha*alpha-scalar(1) )
+    W0 * alpha * ( sqr(alpha)-scalar(1.) )
 );
 
 volScalarField pot_imp
@@ -81,7 +78,7 @@ volScalarField pot_imp
         IOobject::NO_READ,
         IOobject::NO_WRITE
     ),
-    W0 * ( scalar(3)*alpha*alpha-scalar(1) )
+    W0 * ( scalar(3.)*sqr(alpha)-scalar(1.) )
 );
 
 volScalarField mu
@@ -97,7 +94,5 @@ volScalarField mu
     mesh
     //pot - epsilon*epsilon * fvc::laplacian(alpha)
 );
-
-mu.storePrevIter();
 
 const dimensionedScalar pi("pi",dimless/dimLength,M_PI);
