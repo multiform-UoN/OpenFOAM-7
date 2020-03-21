@@ -627,10 +627,15 @@ void Foam::fvMatrix<Type>::relax(const scalar alpha)
 
 
     // Ensure the matrix is diagonally dominant...
-    // Assumes that the central coefficient is positive and ensures it is
+    // Assumes that the central coefficient is positive and ensures it is, fmuni: we don't do that
+    // We preserve the signature of the diagonal in the relaxation
     forAll(D, celli)
     {
-        D[celli] = max(mag(D[celli]), sumOff[celli]);
+        //- Get the sign
+        scalar signD(D[cellI]/mag(D[cellI]));
+      
+        //- Scale the diagonal coefficient if necessary
+        D[celli] = signD*max(mag(D[celli]), sumOff[celli]);
     }
 
     // ... then relax
