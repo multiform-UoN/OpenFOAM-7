@@ -632,7 +632,7 @@ void Foam::fvMatrix<Type>::relax(const scalar alpha)
     forAll(D, celli)
     {
         //- Get the sign
-        scalar signD(D[cellI]/mag(D[cellI]));
+        scalar signD(D[celli]/mag(D[celli]));
       
         //- Scale the diagonal coefficient if necessary
         D[celli] = signD*max(mag(D[celli]), sumOff[celli]);
