@@ -52,7 +52,7 @@ solvers
     {
         solver          GAMG;
         smoother        DILU;
-        tolerance       1e-8;
+        tolerance       1e-10;
         relTol          1e-4;
     }
 
@@ -68,16 +68,23 @@ PIMPLE
 {
     consistent yes;
     momentumPredictor   off;
-    nOuterCorrectors    2;
-    nCorrectors         2;
+    nOuterCorrectors    20;
+    nCorrectors         1;
     nNonOrthogonalCorrectors 2;
     pRefCell            0;
     pRefValue           0;
     turbOnFinalIterOnly no;
     residualControl
     {
-        ".*"           1e-5;
+        ".*"           1e-8;
     }
+    outerCorrectorResidualControl //residualControl
+    {
+        ".*"
+        {
+            tolerance 1e-8;
+            relTol    0;
+        }
 }
 
 SIMPLE

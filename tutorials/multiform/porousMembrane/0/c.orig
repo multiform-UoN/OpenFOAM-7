@@ -37,6 +37,12 @@ boundaryField
 
    top
     {
+        type            zeroGradient;
+       // value           uniform 1;
+    }
+
+ topmid
+    {
         type            fixedValue;
         value           uniform 1;
     }

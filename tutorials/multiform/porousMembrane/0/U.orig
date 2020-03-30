@@ -44,9 +44,16 @@ boundaryField
 
     top
     {
-        type zeroGradient;
+	type noSlip;
+       // type zeroGradient;
         //value uniform (0 -1 0);
     }
+
+	 topmid
+    {   type fixedValue;
+        value uniform (0 -1e-3 0);
+    }
+
     bottom
     {
         //type fixedValue;
@@ -60,7 +67,7 @@ boundaryField
         #{
  //         const tensor K(1e-7*tensor::I);
           // original permeability of the membrane
-          const scalar Kl(1e-10);
+          const scalar Kl(1e-9);
 
           // membrane width
           const scalar L=1e-4;
@@ -84,7 +91,9 @@ boundaryField
                           //this->size(),
                           vector(0,Kl/L,0) * exp(-cc)
                         );
-
+          
+          Info << "Average permeability " << gSum(K)/K.size() << endl;
+          
           // set outlet velocity through the membrane
           // assuming the pressure outside is p=0
           operator==( - K*(pfield.boundaryField()[patchi]) );

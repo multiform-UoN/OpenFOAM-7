@@ -33,7 +33,7 @@ boundaryField
         type            fixedValue;//fixedJump;
         //patchType       cyclic;
         //jump            uniform -10;
-        value           uniform 10;
+        value           uniform 0;
     }
 
     outlet
@@ -46,9 +46,15 @@ boundaryField
 
    top
     {
-        type            fixedValue;
-        value           uniform 20;
+        type            zeroGradient;
+        value           cyclic;
     }
+
+	topmid
+    {
+        type            fixedFluxPressure;//fixedValue;
+        value           uniform 100;
+    }	
 
     bottom
     {
