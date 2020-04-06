@@ -518,6 +518,26 @@ void Foam::fvMatrix<Type>::setReference
 
 
 template<class Type>
+void Foam::fvMatrix<Type>::mySetReference
+(
+    const label celli,
+    const Type& value,
+    const bool forceReference
+)
+{
+  // Calculate the sum-mag off-diagonal from the interior faces
+  scalarField sumOff(diag().size(), 0.0);
+  sumMagOffDiag(sumOff);
+
+  if ((forceReference || psi_.needReference()) && celli >= 0)
+  {
+      source()[celli] += sumOff[celli]*value;
+      diag()[celli] += sumOff[celli];
+  }
+}
+
+
+template<class Type>
 void Foam::fvMatrix<Type>::relax(const scalar alpha)
 {
     if (alpha <= 0)
@@ -633,7 +653,7 @@ void Foam::fvMatrix<Type>::relax(const scalar alpha)
     {
         //- Get the sign
         scalar signD(D[celli]/mag(D[celli]));
-      
+
         //- Scale the diagonal coefficient if necessary
         D[celli] = signD*max(mag(D[celli]), sumOff[celli]);
     }

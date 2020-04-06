@@ -352,6 +352,14 @@ public:
                 const bool forceReference = false
             );
 
+            //- Set reference level for solution
+            void mySetReference
+            (
+                const label celli,
+                const Type& value,
+                const bool forceReference = false
+            );
+
             //- Set reference level for a component of the solution
             //  on a given patch face
             void setComponentReference

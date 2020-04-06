@@ -37,86 +37,184 @@ Solves Cahn-Hilliard equation
 
 int main(int argc, char *argv[])
 {
-    #include "setRootCaseLists.H"
+  #include "setRootCaseLists.H"
 
-    #include "createTime.H"
-    #include "createMesh.H"
+  #include "createTime.H"
+  #include "createMesh.H"
 
-    pimpleControl pimple(mesh);
+  pimpleControl pimple(mesh);
 
-    #include "createFields.H"
+  #include "createFields.H"
 
 
-    // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+  // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-    Info<< "\nCalculating Cahn-Hiliard solution\n" << endl;
+  Info<< "\nCalculating Cahn-Hiliard solution\n" << endl;
 
-    label muRefCell = 0;
-    scalar muRefValue = 0.0;
+  Info << "Initial Energy calculation" << endl;
 
-    Info << "Initial Energy calculation" << endl;
-    #include "computeEnergy.H"
+  #include "computeEnergy.H"
+  #include "updateMu.H"
 
-    Info << "Start time loop" << endl;
+  Info << "Start time loop" << endl;
 
-    while (runTime.loop())
+
+  while (runTime.loop())
+  {
+    Info<< "Time = " << runTime.timeName() << nl << endl;
+
+    // Shall we update the non-linearity here?
+    #include "updatePot.H"
+    // Or just the solvability condition
+    pot -= fvc::domainIntegrate(pot-mu)/vol;
+
+
+    // -- DEBUG
+    if (debugCH)
     {
-        Info<< "Time = " << runTime.timeName() << nl << endl;
+      mu.write();
+      alpha.write();
+    }
+    // -- DEBUG
 
-        Info << "Start internal loop" << endl;
+    mu.storePrevIter();
+    alpha.storePrevIter();
 
-        #include "updatePot.H"
-        #include "updateMu.H"
+    while (pimple.loop())
+    {
 
-        while (pimple.loop())
+      // Shall we update the non-linearity here?
+      // #include "updatePot.H"
+      // Or just the solvability condition
+      // pot -= fvc::domainIntegrate(pot-mu)/vol;
+
+      // -- DEBUG
+      if (debugCH)
+      {
+        runTime++;
+        volScalarField laplalpha
+        (
+          "laplalpha",
+          epsSq*(thetaAlpha-scalar(1))*fvc::laplacian(alpha)
+        );
+        laplalpha.write();
+
+        Info << fvc::domainIntegrate(mu-pot) << endl;
+        pot.write();
+        volScalarField mupot("mupot",mu-pot);
+        mupot.write();
+      }
+      // -- DEBUG
+
+      while (pimple.correctNonOrthogonal())
+      {
+
+        fvScalarMatrix alphaEqn
+        (
+          - fvm::laplacian(epsSq, alpha)
+          // + fvm::Sp(mag(potImp)+scalar(1),alpha) // semi-implicit potential
+          // + fvm::Sp(scalar(1)/thetaAlpha,alpha) // add to diagonal
+          ==
+          (thetaAlpha-scalar(1))*epsSq*fvc::laplacian(alpha.prevIter()) // use previous time?
+          // + (mag(potImp)+scalar(1))*alpha // semi-implicit potential
+          // + (scalar(1)/thetaAlpha)*alpha // remove from diagonal
+          - thetaAlpha*pot
+          + thetaAlpha*mu.prevIter() // use previous time?
+          // This term is to try to conserve mass
+          - fvc::domainIntegrate(alpha-alpha.prevIter())/vol
+        );
+
+        alphaEqn.relax();
+        alphaEqn.solve();
+
+        // Shall we update the non-linearity here?
+        // #include "updatePot.H"
+        // Or just the solvability condition
+        // pot -= fvc::domainIntegrate(pot-mu)/vol;
+
+
+        // -- DEBUG
+        if (debugCH)
         {
-
-            while (pimple.correctNonOrthogonal())
-            {
-                fvScalarMatrix alphaEqn
-                (
-                    - fvm::laplacian(epsilon*epsilon, alpha)
-                    ==
-                    - fvm::Sp(pot_imp,alpha) - (pot-pot_imp*alpha) + mu
-                );
-
-                alphaEqn.relax();
-                alphaEqn.solve();
-            }
-
-            #include "updatePot.H"
-
-            while (pimple.correctNonOrthogonal())
-            {
-                fvScalarMatrix muEqn
-                (
-                    fvc::ddt(alpha) - fvm::laplacian(M/scalar(2), mu)
-                    ==
-                    //fvOptions(mu)
-                    M/scalar(2.)*fvc::laplacian(mu.prevIter())
-                );
-
-                //fvOptions.constrain(muEqn);
-                muEqn.setReference(muRefCell, muRefValue);
-                muEqn.relax();
-                muEqn.solve();
-                //fvOptions.correct(mu);
-            }
-
-            #include "computeEnergy.H"
-
+          Info << "Integral alpha " << fvc::domainIntegrate(alpha) << endl;
         }
+        // -- DEBUG
 
-        runTime.write();
+      }
 
-        Info<< "ExecutionTime = " << runTime.elapsedCpuTime() << " s"
-        << "  ClockTime = " << runTime.elapsedClockTime() << " s"
-        << nl << endl;
+      // -- DEBUG
+      if (debugCH)
+      {
+        volScalarField laplmu
+        (
+          "laplmu",
+          (thetaMu-scalar(1))*M*fvc::laplacian(mu)
+        );
+        laplmu.write();
+        volScalarField ddtAlpha
+        (
+          "ddtAlpha",
+          thetaMu*(alpha-alpha.prevIter())/runTime.deltaT()
+        );
+        ddtAlpha.write();
+        mu.write();
+        alpha.write();
+        runTime++;
+      }
+      // -- DEBUG
+
+      while (pimple.correctNonOrthogonal())
+      {
+        fvScalarMatrix muEqn
+        (
+          thetaMu*fvc::ddt(alpha)
+          -
+          fvm::laplacian(M, mu)
+          ==
+          (thetaMu-scalar(1))*M*fvc::laplacian(mu.prevIter()) // use previous time?
+        );
+
+        // muEqn.mySetReference(0,scalar(0),true);
+        muEqn.relax();
+        muEqn.solve();
+
+        // mu defined up to a constant
+        // current implementation of setReference is not appropriate
+        // for the moment just rescaling to have zero mean
+        mu -= fvc::domainIntegrate(mu)/vol;
+        mu.correctBoundaryConditions();
+
+        // -- DEBUG
+        if (debugCH)
+        {
+          Info << "Integral mu " << fvc::domainIntegrate(mu) << endl;
+        }
+        // -- DEBUG
+      }
+
+      // -- DEBUG
+      if (debugCH)
+      {
+        mu.write();
+        alpha.write();
+      }
+      // -- DEBUG
+
+
+      #include "computeEnergy.H"
+
     }
 
-    Info<< "End\n" << endl;
+    runTime.write();
 
-    return 0;
+    Info<< "ExecutionTime = " << runTime.elapsedCpuTime() << " s"
+    << "  ClockTime = " << runTime.elapsedClockTime() << " s"
+    << nl << endl;
+  }
+
+  Info<< "End\n" << endl;
+
+  return 0;
 }
 
 

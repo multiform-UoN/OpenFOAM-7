@@ -35,7 +35,6 @@ dimensionedScalar M
     transportProperties.lookup("M")
 );
 
-
 Info<< "Reading free energy constant W0\n" << endl;
 
 dimensionedScalar W0
@@ -50,8 +49,7 @@ dimensionedScalar epsilon
     transportProperties.lookup("epsilon")
 );
 
-#include "createFvOptions.H"
-
+dimensionedScalar epsSq(pow(epsilon,2));
 
 Info<< "\nCreating field mu (chemical potential)" << endl;
 
@@ -68,7 +66,7 @@ volScalarField pot
     W0 * alpha * ( sqr(alpha)-scalar(1.) )
 );
 
-volScalarField pot_imp
+volScalarField potImp
 (
     IOobject
     (
@@ -95,4 +93,22 @@ volScalarField mu
     //pot - epsilon*epsilon * fvc::laplacian(alpha)
 );
 
-const dimensionedScalar pi("pi",dimless/dimLength,M_PI);
+const dimensionedScalar vol( "vol", dimVol, gSum( mesh.V() ) );
+const dimensionedScalar one( "one", dimless/dimTime, scalar(1) );
+
+Info<< "Reading relaxation coefficients\n" << endl;
+
+scalar thetaMu
+(
+    readScalar(pimple.dict().lookup("muRelax"))
+);
+
+scalar thetaAlpha
+(
+    readScalar(pimple.dict().lookup("alphaRelax"))
+);
+
+bool debugCH
+(
+    pimple.dict().lookupOrDefault<bool>("debugCH",false)
+);
