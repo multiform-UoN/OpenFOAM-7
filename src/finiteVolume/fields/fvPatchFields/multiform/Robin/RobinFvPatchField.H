@@ -169,7 +169,7 @@ public:
             //  Poissons equations.
             virtual bool fixesValue() const
             {
-                return false;
+                return true;
             }
 
             //- Return false: this patch field is not altered by assignment
