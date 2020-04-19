@@ -30,26 +30,26 @@ IOdictionary transportProperties
 
 Info<< "Reading mobility M\n" << endl;
 
-dimensionedScalar M
+const dimensionedScalar M
 (
     transportProperties.lookup("M")
 );
 
 Info<< "Reading free energy constant W0\n" << endl;
 
-dimensionedScalar W0
+const dimensionedScalar W0
 (
     transportProperties.lookup("W0")
 );
 
 Info<< "Reading diffuse interface length epsilon\n" << endl;
 
-dimensionedScalar epsilon
+const dimensionedScalar epsilon
 (
     transportProperties.lookup("epsilon")
 );
 
-dimensionedScalar epsSq(pow(epsilon,2));
+const dimensionedScalar epsSq(pow(epsilon,2));
 
 Info<< "\nCreating field mu (chemical potential)" << endl;
 
@@ -98,17 +98,51 @@ const dimensionedScalar one( "one", dimless/dimTime, scalar(1) );
 
 Info<< "Reading relaxation coefficients\n" << endl;
 
-scalar thetaMu
+const scalar thetaMu
 (
     readScalar(pimple.dict().lookup("muRelax"))
 );
 
-scalar thetaAlpha
+const scalar thetaAlpha
 (
     readScalar(pimple.dict().lookup("alphaRelax"))
 );
 
-bool debugCH
+const scalar thetaMu0
+(
+    (scalar(1)-thetaMu)/thetaMu
+);
+
+const scalar thetaAlpha0
+(
+    (scalar(1)-thetaAlpha)/thetaAlpha
+);
+
+const dimensionedScalar lambdaMu
+(
+    "lambdaMu", dimless/dimTime, readScalar(pimple.dict().lookup("lambdaMu"))
+);
+
+const dimensionedScalar lambdaAlpha
+(
+    "lambdaAlpha", dimless/(dimLength*dimLength), readScalar(pimple.dict().lookup("lambdaAlpha"))
+);
+
+const dimensionedScalar pseudoTimeStepAlpha
+(
+    "pseudoTimeStepAlpha",dimless/(dimLength*dimLength),thetaAlpha0/runTime.deltaT().value()
+);
+
+const dimensionedScalar pseudoTimeStepMu
+(
+    thetaMu0/runTime.deltaT()
+);
+
+const bool debugCH
 (
     pimple.dict().lookupOrDefault<bool>("debugCH",false)
 );
+
+const dimensionedScalar thetaAlphaEps(scalar(1)/(epsSq*thetaAlpha));
+
+dimensionedScalar meanpot(fvc::domainIntegrate(pot)/vol);

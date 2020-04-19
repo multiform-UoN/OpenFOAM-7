@@ -63,7 +63,6 @@ int main(int argc, char *argv[])
 
         while (simple.correctNonOrthogonal())
         {
-            // coeff = rate*(avgT-lambda);
 
             fvScalarMatrix TEqn
             (
@@ -78,6 +77,15 @@ int main(int argc, char *argv[])
                 // + rate*posPart(avgT)*T
                 // - rate*negPart(lambda)*T
             );
+
+            // -- THIS CAN BE ADDED TO fvMatrix
+            //  TEqn.constrain(weight);
+            //  which computes lambda as
+            //  fvc::domainIntegrate(weight*T)/vol
+            //  and adds these to the matrix
+            //   - fvm::Sp(rate*weight*lambda,T) + rate*weight*avgT*T
+            //  rate can be estimated based on the diagonal of the matrix
+
 
             TEqn.relax();
             TEqn.solve();

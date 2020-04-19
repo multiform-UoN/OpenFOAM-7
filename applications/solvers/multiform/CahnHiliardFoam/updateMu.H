@@ -1,3 +1,3 @@
-mu = pot - sqr(epsilon) * fvc::laplacian(alpha);
-mu -= fvc::domainIntegrate(mu)/vol;
+mu = pot - epsSq * fvc::laplacian(alpha);
+mu -= fvc::domainIntegrate(mu-pot)/vol;
 mu.correctBoundaryConditions();

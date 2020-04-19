@@ -7,9 +7,17 @@ alphaInit  #codeStream
             const dimensionedScalar pi("pi",dimless/dimLength,M_PI);
             scalarField fld
             (
-                scalar(0.1)
-              * Foam::cos(scalar(2.)*pi*mesh.C().component(0))
-              * Foam::cos(scalar(2.)*pi*mesh.C().component(1))
+              (
+              scalar(0.1)
+              *
+              Foam::cos(scalar(2.)*pi*mesh.C().component(0))
+              *
+              Foam::cos(scalar(2.)*pi*mesh.C().component(1))
+              //+
+              //scalar(1)
+              )
+              ///
+              //scalar(2)
             );
             writeEntry(os,"",fld);
         #};
