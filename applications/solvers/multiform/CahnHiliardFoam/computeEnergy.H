@@ -9,4 +9,4 @@ Info<< "Avg Energy : " <<
 
 Info<< "Avg mass : " << (fvc::domainIntegrate(alpha)/vol).value() << endl;
 
-Info << "Average of (mu-pot) : " << (fvc::domainIntegrate(mu-pot)/vol).value() << endl;
+Info << "Avg (mu-pot) : " << (fvc::domainIntegrate(mu-pot)/vol).value() << endl;

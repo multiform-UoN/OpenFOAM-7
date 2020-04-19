@@ -73,8 +73,8 @@ int main(int argc, char *argv[])
     }
     // -- DEBUG
 
-    mu.storePrevIter();
-    alpha.storePrevIter();
+    mu.storeOldTime();
+    alpha.storeOldTime();
 
     while (pimple.loop())
     {
@@ -82,6 +82,7 @@ int main(int argc, char *argv[])
       // Shall we update the non-linearity here?
       // #include "updatePot.H"
 
+      alpha.storePrevIter();
       #include "alphaEqn.H"
 
       mu.storePrevIter();

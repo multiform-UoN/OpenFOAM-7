@@ -21,19 +21,21 @@ solvers
     {
         solver          PCG;
         preconditioner  FDIC;
-        tolerance       1e-12;
-        relTol          1e-6;
+        tolerance       1e-8;
+        relTol          0;
     }
 }
 
 PIMPLE
 {
     debugCH false;
-    lambdaMu 1;
-    lambdaAlpha 1;
-    muRelax 0.7;
-    alphaRelax 0.7;
-    nNonOrthogonalCorrectors 5;
+    lambdaMu 1e6;
+    lambdaAlpha 1e6;
+    muRelax 1;
+    alphaRelax 1;
+    muRelaxTime 0.9;
+    alphaRelaxTime 0.9;
+    nNonOrthogonalCorrectors 0;
     nOuterCorrectors 200;
     
     outerCorrectorResidualControl

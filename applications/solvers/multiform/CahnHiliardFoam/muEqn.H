@@ -29,7 +29,8 @@ while (pimple.correctNonOrthogonal())
 
   fvScalarMatrix muEqn
   (
-    fvc::ddt(alpha)/thetaMu
+    //fvc::ddt(alpha)/thetaMu
+    (alpha-alpha.oldTime())/(runTime.deltaT()*thetaMu)
     +
     fvm::Sp(pseudoTimeStepMu,mu)
     -

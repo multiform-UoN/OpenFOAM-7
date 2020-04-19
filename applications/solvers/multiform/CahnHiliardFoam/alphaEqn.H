@@ -29,7 +29,7 @@ while (pimple.correctNonOrthogonal())
   (
     fvm::Sp(pseudoTimeStepAlpha,alpha)
     -
-    pseudoTimeStepAlpha*alpha
+    pseudoTimeStepAlpha*alpha.prevIter()
     -
     fvm::laplacian(alpha)
     ==

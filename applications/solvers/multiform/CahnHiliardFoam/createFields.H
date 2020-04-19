@@ -128,14 +128,30 @@ const dimensionedScalar lambdaAlpha
     "lambdaAlpha", dimless/(dimLength*dimLength), readScalar(pimple.dict().lookup("lambdaAlpha"))
 );
 
+const scalar alphaRelaxTime
+(
+  readScalar(pimple.dict().lookup("alphaRelaxTime"))
+);
+
+const scalar muRelaxTime
+(
+  readScalar(pimple.dict().lookup("muRelaxTime"))
+);
+
 const dimensionedScalar pseudoTimeStepAlpha
 (
-    "pseudoTimeStepAlpha",dimless/(dimLength*dimLength),thetaAlpha0/runTime.deltaT().value()
+    "pseudoTimeStepAlpha",
+    dimless/(dimLength*dimLength),
+    (scalar(1)-alphaRelaxTime)
+    /
+    (runTime.deltaT().value()*alphaRelaxTime)
 );
 
 const dimensionedScalar pseudoTimeStepMu
 (
-    thetaMu0/runTime.deltaT()
+    (scalar(1)-muRelaxTime)
+    /
+    (runTime.deltaT()*muRelaxTime)
 );
 
 const bool debugCH
