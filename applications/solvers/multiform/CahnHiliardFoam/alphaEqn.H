@@ -14,6 +14,9 @@ if (debugCH)
 }
 // -- DEBUG
 
+//TODO: try potential formulation substituting c into the equation for mu and using linear part of df/dc
+//      into the equation for c.
+
 while (pimple.correctNonOrthogonal())
 {
 
