@@ -194,7 +194,7 @@ void Foam::mappedContinuitySolidFvPatchScalarField::updateCoeffs()
     const scalarField& RobinF = RobinFvPatchScalarField::RobinF();
 
     //- Calculate effective Robin coefficient
-    RobinKeff_ =
+    RobinKeff_ =  // ADD HERE phipFluid/patch().magSf()
                   - this->newMappedDelta()*Dfluid_
                   + RobinK;
     RobinFeff_ = this->newMappedDelta()*this->newMappedInternalField()*Dfluid_

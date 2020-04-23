@@ -36,7 +36,12 @@ while (pimple.correctNonOrthogonal())
     thetaAlpha0*fvc::laplacian(alpha)// .prevIter()) // use previous time?
     -
     thetaAlphaEps*(pot - mu) // .prevIter() // use previous time?
-    // This term is to conserve mass
+    // -- Linearisation of pot
+    -
+    fvm::Sp(thetaAlphaEps*potImp,alpha)
+    +
+    thetaAlphaEps*potImp*alpha.prevIter()
+    // -- This term is to conserve mass
     -
     fvc::Sp(lambdaAlpha*mag(massCor),alpha)
     +
