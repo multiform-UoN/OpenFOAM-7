@@ -46,6 +46,8 @@ SourceFiles
 
 #include "fixedValueFvPatchFields.H"
 #include "volFieldsFwd.H"
+#include "mappedPatchBase.H"
+#include "interpolationCell.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -62,6 +64,27 @@ template<class> class interpolation;
 template<class Type>
 class newMappedPatchFieldBase
 {
+private:
+
+    // Private data
+
+        //- Sample generic fields
+        template<class T>
+        const GeometricField<T, fvPatchField, volMesh>&
+        sampleVolField(word& name) const;
+
+        template<class T>
+        const GeometricField<T, fvsPatchField, surfaceMesh>&
+        sampleSurField(word& name) const;
+
+
+        //- get vol field on nbr patch
+        template<class T>
+        tmp<Field<T>> mappedVolField(word& name) const;
+
+        //- get surface field on nbr patch
+        template<class T>
+        tmp<Field<T>> mappedSurField(word& name) const;
 
 protected:
 
@@ -158,7 +181,7 @@ public:
         virtual void write(Ostream&) const;
 };
 
-
+#include "newMappedPatchFieldBaseTemplates.C"
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 } // End namespace Foam

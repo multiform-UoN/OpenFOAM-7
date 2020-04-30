@@ -175,7 +175,7 @@ tmp<Field<Type>> newMappedPatchFieldBase<Type>::newMappedField() const
     int oldTag = UPstream::msgType();
     UPstream::msgType() = oldTag + 1;
 
-    const fvMesh& thisMesh = patchField_.patch().boundaryMesh().mesh();
+//    const fvMesh& thisMesh = patchField_.patch().boundaryMesh().mesh();
     const fvMesh& nbrMesh = refCast<const fvMesh>(mapper_.sampleMesh());
 
     // Result of obtaining remote values
@@ -246,7 +246,7 @@ tmp<Field<Type>> newMappedPatchFieldBase<Type>::newMappedGrad() const
     int oldTag = UPstream::msgType();
     UPstream::msgType() = oldTag + 1;
 
-    const fvMesh& thisMesh = patchField_.patch().boundaryMesh().mesh();
+    //const fvMesh& thisMesh = patchField_.patch().boundaryMesh().mesh();
     const fvMesh& nbrMesh = refCast<const fvMesh>(mapper_.sampleMesh());
 
     // Result of obtaining remote values
