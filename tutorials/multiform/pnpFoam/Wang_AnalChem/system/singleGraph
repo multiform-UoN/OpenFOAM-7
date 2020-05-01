@@ -1,0 +1,56 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  7
+     \\/     M anipulation  |
+-------------------------------------------------------------------------------
+Description
+    Writes graph data for specified fields along a line, specified by start
+    and end points.
+
+\*---------------------------------------------------------------------------*/
+
+functionObjectLibs ("libsampling.so");
+
+type sets;
+
+interpolationScheme cellPoint;
+
+setFormat raw;
+
+fields(
+	V
+);
+
+setConfig
+{
+    type uniform;
+    axis distance;
+    nPoints 1000;
+}
+
+
+
+writeControl runTime;
+
+sets
+(
+	Inner_Pip_Lateral_Slice
+	{
+		$setConfig
+
+		start	(2.5e-6 0 0);
+		end		(2.5e-6 5e-5 0);
+	}
+	
+  Planar_Electrode
+  {
+    $setConfig
+
+    start (0 0 0);
+    end   (5e-5 0 0);
+  }
+);
+
+// ************************************************************************* //

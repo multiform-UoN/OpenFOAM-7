@@ -1,0 +1,50 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  6
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      variables;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+// dimension mins are starting points for corner of domain, should never change
+xmin 0; 
+ymin 0;
+zmin 0;
+ymax 0.01;
+// ymax is 'height' of domain, alters thickness of entire domain
+
+dx 0.02;
+dy 0.01;//0.025;
+dz 0.02;
+// mesh sizes for each dimension
+
+h1 1; // thickness of connecting region/thickness of cut-outs (across x-axis)
+h2 1; // thickness of first clear column
+h3 1; // length from connecting region to edges: z=0,zmax/half size of repeated obstruction
+h4 1; // length of connecting region/length of space between repeated obstruction
+L 1; // thickness of second clear column
+
+cx #calc "$h1 + $h2"; // distance to start of second free column from mins (across x-axis)
+lx #calc "$h2 + $h1 + $L"; // total thickness of domain (across x-axis)
+cz #calc "$h3 + $h4"; // distance to end of connecting region from mins (across z-axis)
+lz #calc "$h1 + $h3 + $h3"; // total length of domain (across z-axis)
+
+x1cells #calc "round($h2/$dx)"; // no. of cells in first clear column
+x2cells #calc "round($h1/$dx)"; // no. of cells in connecting region
+x3cells #calc "round($L/$dx)"; // no. of cells in second clear column
+
+ycells #calc "round($ymax/$dy)"; // no. of cells in y dimension
+
+z1cells #calc "round($h3/$dz)"; // no. of cells in 'end prongs'
+z2cells #calc "round($h4/$dz)"; // no. of cells in centre region
+
+// ************************************************************************* //

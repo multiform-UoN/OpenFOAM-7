@@ -1,0 +1,54 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  7
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volScalarField;
+    object      V;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+dimensions      [1 2 -3 0 0 -1 0];
+
+internalField   uniform 0;
+
+boundaryField //----- Set V=1 on top legs and -1 on others to obtain a potential difference, set to noFlux across other boundaries, i.e no potential through walls -----//
+{
+	".*LeftLeg"
+	{
+		type            fixedValue;
+		value           uniform -1e-2;
+	}
+
+	".*RightLeg"
+	{
+		type		fixedValue;
+		value		uniform 1e-2;
+	}
+
+	"FixedWallsTop|FixedWallsBottom"
+	{
+		type		empty;
+	}
+
+	"FixedWallsLeft|FixedWallsRight"
+	{
+		type		fixedGradient;
+        gradient    1e4;
+		value		$internalField;
+	}
+	
+	"BottomInnerWall|TopInnerWall"
+	{
+		type		zeroGradient;
+		value		$internalField;
+	}
+}
+
+// ************************************************************************* //

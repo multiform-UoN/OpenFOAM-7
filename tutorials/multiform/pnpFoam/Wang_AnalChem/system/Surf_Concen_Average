@@ -1,0 +1,79 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  7
+     \\/     M anipulation  |
+-------------------------------------------------------------------------------
+Description
+    Calculates the normal gradient at chosen patches.
+
+\*---------------------------------------------------------------------------*/
+functionObjectLibs            ("libutilityFunctionObjects.so");
+
+type            coded;
+
+name Surface_Concen_Average;
+
+codeExecute
+#{
+	// TO DO:
+	//		- Look up both concentration objects (DONE)
+	//		- Look up desired patche(s) (DONE)
+	//		- Take gSum of concens at patche(s) (DONE)
+	//		- Get surface area of patche(s) (DONE)
+	//		- Output average to file, and time (DONE)
+	
+	//Look up concentration objects in mesh() registry
+	const volScalarField& C_Cl = mesh().lookupObject<volScalarField>("C.Cl");
+	const volScalarField& C_Na = mesh().lookupObject<volScalarField>("C.Na");
+
+	//Look up patch id for desired patch/boundary
+	label Patch_ID = mesh().boundaryMesh().findPatchID("Planar_Electrode");
+
+	//Construct references to concen fields at desired patch
+	const fvPatchScalarField& C_Cl_Patch = C_Cl.boundaryField()[Patch_ID];
+	const fvPatchScalarField& C_Na_Patch = C_Na.boundaryField()[Patch_ID];
+
+	//Construct reference to face area magnitudes of patch 
+	const scalarField& Patch_Cell_Areas = C_Cl_Patch.patch().magSf();
+
+	scalarField Tot_Moles(2,0);
+
+	//Sum concentrations over patch
+	Tot_Moles[0] = gSum(C_Cl_Patch*Patch_Cell_Areas);
+	Tot_Moles[1] = gSum(C_Na_Patch*Patch_Cell_Areas);
+
+	//Sum face areas of patch, i.e surface area of patch
+	scalar Tot_Patch_Area = gSum(Patch_Cell_Areas);
+
+	//NOT SURE WHAT THIS REALLY DOES (reduce the sumOpn operation?????)	
+  reduce(Tot_Moles,sumOp<tmp<Field<double>>>());
+	reduce(Tot_Patch_Area,sumOp<double>());
+
+  	if(Pstream::master()){ //Check if master process(or) (Automatically satisfied if non-parallel processing)
+
+  		fileName Output_Dir = "./Post_Data";
+  		OFstream out(Output_Dir/"Exists.dat");
+  		autoPtr<std::ofstream> file;
+
+  		if(!out.good()){ //Check if directory & file exists
+  			Info<< "Creating Post_Data directory: " <<endl;
+  			mkDir(Output_Dir);
+  			//Reset file to a new ofstream
+  			file.reset(new std::ofstream(Output_Dir/"Average_Surf_Concen.dat"));
+  			//Write header line (NEED TO GENERALIZE TO INDEFINITE NUMBER OF CONCENS)
+  			file() <<"Time\tC_Cl_Avg\tC_Na_Avg\n";
+  		}
+  		//Reset file to new ofstream that appends to Average_Surf_Concen.dat
+  		file.reset(new std::ofstream(Output_Dir/"Average_Surf_Concen.dat", std::ios::out | std::ios::app));
+  		//Write current time
+        file() << mesh().time().timeName()<<"\t";
+        //Output surface average concentrations
+        forAll(Tot_Moles,i){
+        	file() << Tot_Moles[i]/Tot_Patch_Area << "\t";
+        }
+        file() <<"\n";
+  	}
+
+#};

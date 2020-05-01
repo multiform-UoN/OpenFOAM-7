@@ -1,0 +1,92 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  7
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volScalarField;
+    object      V;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+dimensions      [1 2 -3 0 0 -1 0];
+
+internalField   uniform 0;
+
+boundaryField
+{
+    Inner_Pip_Wall
+    {
+        type            noFlux;//zeroGradient;
+        value           uniform 0;
+    }
+
+    Outer_Pip_Wall
+    {
+        type            noFlux;//zeroGradient;
+        value           uniform 0;
+    }
+
+    Inner_Electrode
+    {
+        type            codedFixedValue;//zeroGradient; // phi = V_{1}*Triangluar wave function (time variate)
+        value           uniform 0.3;
+
+        redirectType    triangfixedValue;
+
+        code
+        #{
+            #include "mathematicalConstants.H"
+            #include <cmath>
+
+            //Construct pi (easier to write)
+            const Foam::scalar pi = constant::mathematical::pi;
+
+            //Extract current time value
+            const Foam::scalar t = this->db().time().value();
+
+            //Signal angular frequency
+            const Foam::scalar ang_freq = 2.5e4 * pi;
+
+            //Signal Amplitude
+            const Foam::scalar Amp = 0.3;
+
+            //Rescale t within a single wavelength (using fmod to 'wrap' around)
+            const Foam::scalar t_rescale = std::fmod(t + pi/(2.0*ang_freq),2.0*pi/ang_freq);
+            /*
+            if(t_rescale <= pi/(ang_freq) ) // && t_rescale >= 0)
+            {
+                operator==(Amp*ang_freq*(t_rescale-pi/ang_freq/2.0)/pi);
+            }
+            else
+            {
+                operator==(-Amp*ang_freq*(t_rescale-3.0*pi/ang_freq/2.0)/pi);
+            }
+            */
+            operator==(Amp*(1.0 - (2.0*ang_freq/pi)*(std::fabs(t_rescale - (pi/ang_freq)))));
+        #};
+
+    }
+
+    Planar_Electrode
+    {
+        type            fixedValue;
+        value           uniform 0;
+    }
+
+    Outer_Walls
+    {
+        type            noFlux;//zeroGradient;
+        value           uniform 0;
+    }
+
+#includeEtc "caseDicts/setConstraintTypes"
+
+}
+
+// ************************************************************************* //
