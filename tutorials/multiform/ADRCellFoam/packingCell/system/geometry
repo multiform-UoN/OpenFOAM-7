@@ -1,0 +1,627 @@
+geometry
+{
+
+    circle
+    {
+        type searchableSphere;
+        centre (0 0 0);
+        radius 1;
+    }
+
+    solid
+    {
+        type searchableSurfaceCollection;
+
+        mergeSubRegions true;
+
+        grain0
+        {
+                surface circle;
+                scale   (0.5 0.5 0.5);
+                transform
+                {
+                        coordinateSystem
+                {
+                        type    cartesian;
+                        origin  (0.955614 0.955614 0.000000);
+                coordinateRotation
+                {
+                type    axesRotation;
+                e1      (1 0 0);
+                e3      (0 0 1);
+                }
+                }
+                }
+        }
+        grain1
+        {
+                surface circle;
+                scale   (0.5 0.5 0.5);
+                transform
+                {
+                        coordinateSystem
+                {
+                        type    cartesian;
+                        origin  (0.000000 0.955614 0.955614);
+                coordinateRotation
+                {
+                type    axesRotation;
+                e1      (1 0 0);
+                e3      (0 0 1);
+                }
+                }
+                }
+        }
+        grain2
+        {
+                surface circle;
+                scale   (0.5 0.5 0.5);
+                transform
+                {
+                        coordinateSystem
+                {
+                        type    cartesian;
+                        origin  (0.955614 0.000000 0.955614);
+                coordinateRotation
+                {
+                type    axesRotation;
+                e1      (1 0 0);
+                e3      (0 0 1);
+                }
+                }
+                }
+        }
+        grain3
+        {
+                surface circle;
+                scale   (0.5 0.5 0.5);
+                transform
+                {
+                        coordinateSystem
+                {
+                        type    cartesian;
+                        origin  (0.000000 0.000000 0.000000);
+                coordinateRotation
+                {
+                type    axesRotation;
+                e1      (1 0 0);
+                e3      (0 0 1);
+                }
+                }
+                }
+        }
+        grain10
+        {
+                surface circle;
+                scale   (0.5 0.5 0.5);
+                transform
+                {
+                        coordinateSystem
+                {
+                        type    cartesian;
+                        origin  (0.955614 0.955614 1.911228);
+                coordinateRotation
+                {
+                type    axesRotation;
+                e1      (1 0 0);
+                e3      (0 0 1);
+                }
+                }
+                }
+        }
+        grain11
+        {
+                surface circle;
+                scale   (0.5 0.5 0.5);
+                transform
+                {
+                        coordinateSystem
+                {
+                        type    cartesian;
+                        origin  (0.000000 0.955614 2.866842);
+                coordinateRotation
+                {
+                type    axesRotation;
+                e1      (1 0 0);
+                e3      (0 0 1);
+                }
+                }
+                }
+        }
+        grain12
+        {
+                surface circle;
+                scale   (0.5 0.5 0.5);
+                transform
+                {
+                        coordinateSystem
+                {
+                        type    cartesian;
+                        origin  (0.955614 0.000000 2.866842);
+                coordinateRotation
+                {
+                type    axesRotation;
+                e1      (1 0 0);
+                e3      (0 0 1);
+                }
+                }
+                }
+        }
+        grain13
+        {
+                surface circle;
+                scale   (0.5 0.5 0.5);
+                transform
+                {
+                        coordinateSystem
+                {
+                        type    cartesian;
+                        origin  (0.000000 0.000000 1.911228);
+                coordinateRotation
+                {
+                type    axesRotation;
+                e1      (1 0 0);
+                e3      (0 0 1);
+                }
+                }
+                }
+        }
+        grain20
+        {
+                surface circle;
+                scale   (0.5 0.5 0.5);
+                transform
+                {
+                        coordinateSystem
+                {
+                        type    cartesian;
+                        origin  (0.955614 2.866842 0.000000);
+                coordinateRotation
+                {
+                type    axesRotation;
+                e1      (1 0 0);
+                e3      (0 0 1);
+                }
+                }
+                }
+        }
+        grain21
+        {
+                surface circle;
+                scale   (0.5 0.5 0.5);
+                transform
+                {
+                        coordinateSystem
+                {
+                        type    cartesian;
+                        origin  (0.000000 2.866842 0.955614);
+                coordinateRotation
+                {
+                type    axesRotation;
+                e1      (1 0 0);
+                e3      (0 0 1);
+                }
+                }
+                }
+        }
+        grain22
+        {
+                surface circle;
+                scale   (0.5 0.5 0.5);
+                transform
+                {
+                        coordinateSystem
+                {
+                        type    cartesian;
+                        origin  (0.955614 1.911228 0.955614);
+                coordinateRotation
+                {
+                type    axesRotation;
+                e1      (1 0 0);
+                e3      (0 0 1);
+                }
+                }
+                }
+        }
+        grain23
+        {
+                surface circle;
+                scale   (0.5 0.5 0.5);
+                transform
+                {
+                        coordinateSystem
+                {
+                        type    cartesian;
+                        origin  (0.000000 1.911228 0.000000);
+                coordinateRotation
+                {
+                type    axesRotation;
+                e1      (1 0 0);
+                e3      (0 0 1);
+                }
+                }
+                }
+        }
+        grain30
+        {
+                surface circle;
+                scale   (0.5 0.5 0.5);
+                transform
+                {
+                        coordinateSystem
+                {
+                        type    cartesian;
+                        origin  (0.955614 2.866842 1.911228);
+                coordinateRotation
+                {
+                type    axesRotation;
+                e1      (1 0 0);
+                e3      (0 0 1);
+                }
+                }
+                }
+        }
+        grain31
+        {
+                surface circle;
+                scale   (0.5 0.5 0.5);
+                transform
+                {
+                        coordinateSystem
+                {
+                        type    cartesian;
+                        origin  (0.000000 2.866842 2.866842);
+                coordinateRotation
+                {
+                type    axesRotation;
+                e1      (1 0 0);
+                e3      (0 0 1);
+                }
+                }
+                }
+        }
+        grain32
+        {
+                surface circle;
+                scale   (0.5 0.5 0.5);
+                transform
+                {
+                        coordinateSystem
+                {
+                        type    cartesian;
+                        origin  (0.955614 1.911228 2.866842);
+                coordinateRotation
+                {
+                type    axesRotation;
+                e1      (1 0 0);
+                e3      (0 0 1);
+                }
+                }
+                }
+        }
+        grain33
+        {
+                surface circle;
+                scale   (0.5 0.5 0.5);
+                transform
+                {
+                        coordinateSystem
+                {
+                        type    cartesian;
+                        origin  (0.000000 1.911228 1.911228);
+                coordinateRotation
+                {
+                type    axesRotation;
+                e1      (1 0 0);
+                e3      (0 0 1);
+                }
+                }
+                }
+        }
+        grain40
+        {
+                surface circle;
+                scale   (0.5 0.5 0.5);
+                transform
+                {
+                        coordinateSystem
+                {
+                        type    cartesian;
+                        origin  (2.866842 0.955614 0.000000);
+                coordinateRotation
+                {
+                type    axesRotation;
+                e1      (1 0 0);
+                e3      (0 0 1);
+                }
+                }
+                }
+        }
+        grain41
+        {
+                surface circle;
+                scale   (0.5 0.5 0.5);
+                transform
+                {
+                        coordinateSystem
+                {
+                        type    cartesian;
+                        origin  (1.911228 0.955614 0.955614);
+                coordinateRotation
+                {
+                type    axesRotation;
+                e1      (1 0 0);
+                e3      (0 0 1);
+                }
+                }
+                }
+        }
+        grain42
+        {
+                surface circle;
+                scale   (0.5 0.5 0.5);
+                transform
+                {
+                        coordinateSystem
+                {
+                        type    cartesian;
+                        origin  (2.866842 0.000000 0.955614);
+                coordinateRotation
+                {
+                type    axesRotation;
+                e1      (1 0 0);
+                e3      (0 0 1);
+                }
+                }
+                }
+        }
+        grain43
+        {
+                surface circle;
+                scale   (0.5 0.5 0.5);
+                transform
+                {
+                        coordinateSystem
+                {
+                        type    cartesian;
+                        origin  (1.911228 0.000000 0.000000);
+                coordinateRotation
+                {
+                type    axesRotation;
+                e1      (1 0 0);
+                e3      (0 0 1);
+                }
+                }
+                }
+        }
+        grain50
+        {
+                surface circle;
+                scale   (0.5 0.5 0.5);
+                transform
+                {
+                        coordinateSystem
+                {
+                        type    cartesian;
+                        origin  (2.866842 0.955614 1.911228);
+                coordinateRotation
+                {
+                type    axesRotation;
+                e1      (1 0 0);
+                e3      (0 0 1);
+                }
+                }
+                }
+        }
+        grain51
+        {
+                surface circle;
+                scale   (0.5 0.5 0.5);
+                transform
+                {
+                        coordinateSystem
+                {
+                        type    cartesian;
+                        origin  (1.911228 0.955614 2.866842);
+                coordinateRotation
+                {
+                type    axesRotation;
+                e1      (1 0 0);
+                e3      (0 0 1);
+                }
+                }
+                }
+        }
+        grain52
+        {
+                surface circle;
+                scale   (0.5 0.5 0.5);
+                transform
+                {
+                        coordinateSystem
+                {
+                        type    cartesian;
+                        origin  (2.866842 0.000000 2.866842);
+                coordinateRotation
+                {
+                type    axesRotation;
+                e1      (1 0 0);
+                e3      (0 0 1);
+                }
+                }
+                }
+        }
+        grain53
+        {
+                surface circle;
+                scale   (0.5 0.5 0.5);
+                transform
+                {
+                        coordinateSystem
+                {
+                        type    cartesian;
+                        origin  (1.911228 0.000000 1.911228);
+                coordinateRotation
+                {
+                type    axesRotation;
+                e1      (1 0 0);
+                e3      (0 0 1);
+                }
+                }
+                }
+        }
+        grain60
+        {
+                surface circle;
+                scale   (0.5 0.5 0.5);
+                transform
+                {
+                        coordinateSystem
+                {
+                        type    cartesian;
+                        origin  (2.866842 2.866842 0.000000);
+                coordinateRotation
+                {
+                type    axesRotation;
+                e1      (1 0 0);
+                e3      (0 0 1);
+                }
+                }
+                }
+        }
+        grain61
+        {
+                surface circle;
+                scale   (0.5 0.5 0.5);
+                transform
+                {
+                        coordinateSystem
+                {
+                        type    cartesian;
+                        origin  (1.911228 2.866842 0.955614);
+                coordinateRotation
+                {
+                type    axesRotation;
+                e1      (1 0 0);
+                e3      (0 0 1);
+                }
+                }
+                }
+        }
+        grain62
+        {
+                surface circle;
+                scale   (0.5 0.5 0.5);
+                transform
+                {
+                        coordinateSystem
+                {
+                        type    cartesian;
+                        origin  (2.866842 1.911228 0.955614);
+                coordinateRotation
+                {
+                type    axesRotation;
+                e1      (1 0 0);
+                e3      (0 0 1);
+                }
+                }
+                }
+        }
+        grain63
+        {
+                surface circle;
+                scale   (0.5 0.5 0.5);
+                transform
+                {
+                        coordinateSystem
+                {
+                        type    cartesian;
+                        origin  (1.911228 1.911228 0.000000);
+                coordinateRotation
+                {
+                type    axesRotation;
+                e1      (1 0 0);
+                e3      (0 0 1);
+                }
+                }
+                }
+        }
+        grain70
+        {
+                surface circle;
+                scale   (0.5 0.5 0.5);
+                transform
+                {
+                        coordinateSystem
+                {
+                        type    cartesian;
+                        origin  (2.866842 2.866842 1.911228);
+                coordinateRotation
+                {
+                type    axesRotation;
+                e1      (1 0 0);
+                e3      (0 0 1);
+                }
+                }
+                }
+        }
+        grain71
+        {
+                surface circle;
+                scale   (0.5 0.5 0.5);
+                transform
+                {
+                        coordinateSystem
+                {
+                        type    cartesian;
+                        origin  (1.911228 2.866842 2.866842);
+                coordinateRotation
+                {
+                type    axesRotation;
+                e1      (1 0 0);
+                e3      (0 0 1);
+                }
+                }
+                }
+        }
+        grain72
+        {
+                surface circle;
+                scale   (0.5 0.5 0.5);
+                transform
+                {
+                        coordinateSystem
+                {
+                        type    cartesian;
+                        origin  (2.866842 1.911228 2.866842);
+                coordinateRotation
+                {
+                type    axesRotation;
+                e1      (1 0 0);
+                e3      (0 0 1);
+                }
+                }
+                }
+        }
+        grain73
+        {
+                surface circle;
+                scale   (0.5 0.5 0.5);
+                transform
+                {
+                        coordinateSystem
+                {
+                        type    cartesian;
+                        origin  (1.911228 1.911228 1.911228);
+                coordinateRotation
+                {
+                type    axesRotation;
+                e1      (1 0 0);
+                e3      (0 0 1);
+                }
+                }
+                }
+        }
+
+}
+};

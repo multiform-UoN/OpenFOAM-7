@@ -1,0 +1,3 @@
+scalarMultiRegionFoam.C
+
+EXE = $(FOAM_APPBIN)/scalarMultiRegionFoam

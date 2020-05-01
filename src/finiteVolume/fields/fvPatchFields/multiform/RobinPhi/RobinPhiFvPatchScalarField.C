@@ -123,7 +123,7 @@ void Foam::RobinPhiFvPatchScalarField::rmap
 void Foam::RobinPhiFvPatchScalarField::write(Ostream& os) const
 {
     RobinFvPatchScalarField::write(os);
-    writeEntry(os, "phiName", phiName_);
+    writeEntry(os, "phi", phiName_);
     writeEntry(os, "RobinKeff", RobinKeff_);
 }
 

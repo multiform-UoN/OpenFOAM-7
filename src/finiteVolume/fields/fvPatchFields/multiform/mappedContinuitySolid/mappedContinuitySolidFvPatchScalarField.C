@@ -40,6 +40,7 @@ Foam::mappedContinuitySolidFvPatchScalarField::mappedContinuitySolidFvPatchScala
 :
     RobinFvPatchScalarField(p, iF),
     newMappedPatchFieldBase<scalar>(this->mapper(p, iF), *this),
+    phiName_("phi"),
     RobinKeff_(p.size()),
     RobinFeff_(p.size()),
     Dfluid_(p.size())
@@ -55,6 +56,7 @@ Foam::mappedContinuitySolidFvPatchScalarField::mappedContinuitySolidFvPatchScala
 :
     RobinFvPatchScalarField(p, iF, dict),
     newMappedPatchFieldBase<scalar>(this->mapper(p, iF), *this, dict),
+    phiName_(dict.lookupOrDefault<word>("phi", "phi")),
     RobinKeff_(p.size()),
     RobinFeff_(p.size()),
     Dfluid_("Dfluid", dict, p.size())
@@ -73,6 +75,7 @@ Foam::mappedContinuitySolidFvPatchScalarField::mappedContinuitySolidFvPatchScala
 :
     RobinFvPatchScalarField(p, iF),
     newMappedPatchFieldBase<scalar>(this->mapper(p, iF), *this, ptf),
+    phiName_(ptf.phiName_),
     RobinKeff_(mapper(ptf.RobinKeff_)),
     RobinFeff_(mapper(ptf.RobinFeff_)),
     Dfluid_(mapper(ptf.Dfluid_))
@@ -86,6 +89,7 @@ Foam::mappedContinuitySolidFvPatchScalarField::mappedContinuitySolidFvPatchScala
 :
     RobinFvPatchScalarField(ptf),
     newMappedPatchFieldBase<scalar>(ptf),
+    phiName_(ptf.phiName_),
     RobinKeff_(ptf.RobinKeff_),
     RobinFeff_(ptf.RobinFeff_),
     Dfluid_(ptf.Dfluid_)
@@ -100,6 +104,7 @@ Foam::mappedContinuitySolidFvPatchScalarField::mappedContinuitySolidFvPatchScala
 :
     RobinFvPatchScalarField(ptf, iF),
     newMappedPatchFieldBase<scalar>(this->mapper(this->patch(), iF), *this, ptf),
+    phiName_(ptf.phiName_),
     RobinKeff_(ptf.RobinKeff_),
     RobinFeff_(ptf.RobinFeff_),
     Dfluid_(ptf.Dfluid_)
@@ -155,6 +160,7 @@ void Foam::mappedContinuitySolidFvPatchScalarField::write(Ostream& os) const
 {
     RobinFvPatchScalarField::write(os);
     newMappedPatchFieldBase::write(os);
+    writeEntry(os, "phi", phiName_);
 //    writeEntry(os, "RobinKeff", RobinKeff_);
 //    writeEntry(os, "RobinFeff", RobinFeff_);
     writeEntry(os, "Dfluid", Dfluid_);
@@ -194,7 +200,7 @@ void Foam::mappedContinuitySolidFvPatchScalarField::updateCoeffs()
     const scalarField& RobinF = RobinFvPatchScalarField::RobinF();
 
     //- Calculate effective Robin coefficient
-    RobinKeff_ =  // ADD HERE phipFluid/patch().magSf()
+    RobinKeff_ =  mappedSurField<scalar>(phiName_)/patch().magSf()
                   - this->newMappedDelta()*Dfluid_
                   + RobinK;
     RobinFeff_ = this->newMappedDelta()*this->newMappedInternalField()*Dfluid_

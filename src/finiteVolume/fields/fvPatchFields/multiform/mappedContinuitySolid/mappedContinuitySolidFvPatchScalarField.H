@@ -67,6 +67,9 @@ class mappedContinuitySolidFvPatchScalarField
 {
 private:
 
+    //- Flux variable
+    word phiName_;
+
     //- Effective RobinK_
     scalarField RobinKeff_;
 

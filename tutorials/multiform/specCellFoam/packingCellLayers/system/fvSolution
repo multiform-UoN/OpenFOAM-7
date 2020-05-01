@@ -1,0 +1,110 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2.3.0                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      fvSolution;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+solvers
+{
+
+
+    "U|UFinal"
+    {
+        solver               GAMG;
+        smoother  GaussSeidel;
+        tolerance           1e-10;
+        relTol               1e-3;
+    }
+
+
+    "psi.*"
+    {
+        solver           PBiCGStab;
+        tolerance        1e-8;
+        relTol           0;
+        preconditioner   DILU;
+        minIter          0;
+        maxIter          50;
+    }
+
+    "p|pFinal"
+    {
+        solver               GAMG;
+        smoother      GaussSeidel;
+        tolerance           1e-10;
+        relTol               1e-3;
+    }
+
+    "X"
+    {
+    //    type             coupled;
+        solver        PBiCGStab;
+        smoother        DILU;
+        tolerance        1e-10;
+        relTol           1e-10;
+        preconditioner   DILU;
+        minIter         0;
+        maxIter        150;
+    }
+
+    yPsi
+    {
+        solver               PCG;
+        preconditioner       FDIC;
+        smoother      GaussSeidel;
+        tolerance           1e-12;
+        relTol               0;
+    }
+
+}
+
+SIMPLE
+{
+    nNonOrthogonalCorrectors 1;
+    consistent true;
+    residualControl
+    {
+        U         1e-5;
+        p         1e-5;
+    }
+
+//    pRefCell 0;
+//    pRefValue 0;
+}
+
+PowerControl
+{
+    nNonOrthogonalCorrectors 3;
+    eigenvalueTol   1e-07;
+    eigenfunctionTol 1e-06;
+    cellProblemTol  1e-5;
+    maxPowerIterations 100;
+    maxCellProblemIterations 100;
+    AitkenAccelerationPower    off;
+    AitkenAccelerationCorr     on;
+    implicitRayleigh true;
+    residualsOnEffectiveDispersion false;
+}
+
+
+relaxationFactors
+{
+    equations
+    {
+        "X.*"     0.95;
+        "U.*"     0.7;
+        "psi.*"   0.95;
+    }
+}
+// ************************************************************************* //111

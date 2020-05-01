@@ -1,0 +1,3 @@
+specCellFoam.C
+
+EXE = $(FOAM_APPBIN)/specCellFoamMat

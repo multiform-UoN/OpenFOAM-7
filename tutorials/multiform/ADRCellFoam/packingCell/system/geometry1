@@ -1,0 +1,16 @@
+geometry
+{
+
+    circle
+    {
+        type searchableSphere;
+        centre (0 0 0);
+        radius 1;
+    }
+
+    solid
+    {
+        type searchableSurfaceCollection;
+
+        mergeSubRegions true;
+

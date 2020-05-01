@@ -1,0 +1,3 @@
+ADRCellFoam.C
+
+EXE = $(FOAM_APPBIN)/ADRCellFoam

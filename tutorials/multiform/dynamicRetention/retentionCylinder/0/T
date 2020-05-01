@@ -1,0 +1,83 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  6
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volScalarField;
+    object      T;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+dimensions      [0 0 0 1 0 0 0];
+
+internalField   uniform 0;
+
+boundaryField
+{
+    left
+    {
+        type            fixedValue;
+        value           uniform 1;
+    }
+
+    cylinder
+    {
+        type            dynamicRetention;
+        value           uniform 0;
+        RobinD          uniform 1.0;
+        RobinK          uniform -1;
+        RobinF          uniform 0;
+        S               uniform 0;
+        shearDetachment true;
+
+	    Kd              uniform -1e-2;
+
+	    forwardReaction
+        {
+			type		 rationalPolynomial;
+		    S0           1;
+		    n            1;
+		    Kref         2;
+        }
+
+        backwardReaction
+        {
+		    type		constant;
+        }
+
+		shearDetachmentRate
+        {
+            type		 shearLinear;
+            K           1;
+        }
+
+    }
+
+    up
+    {
+        type            symmetryPlane;
+    }
+
+    down
+    {
+        type            symmetryPlane;
+    }
+
+    frontAndBack
+    {
+        type            empty;
+    }
+
+    right
+    {
+        type            zeroGradient;
+    }
+}
+
+// ************************************************************************* //

@@ -1,0 +1,3 @@
+scalarPotentialTransportFoam.C
+
+EXE = $(FOAM_APPBIN)/scalarPotentialTransportFoam

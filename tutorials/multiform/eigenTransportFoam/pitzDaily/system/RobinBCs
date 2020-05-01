@@ -1,0 +1,60 @@
+//- Robin boundary conditions
+RobinDirichlet
+{
+    type            codedFixedValue;
+    value           uniform 0;
+    name            RobinDirichlet;  
+
+    code
+    #{
+        scalar Damkholer(10.);
+        operator==(-(this->snGrad())/Damkholer);
+    #};   
+};
+
+RobinNeumann
+{
+    type            codedMixed;
+
+    refValue        uniform 0;
+    refGradient     uniform 0;
+    valueFraction   uniform 0;
+
+    name            RobinNeumann;   
+
+    code
+    #{
+        scalar Damkholer(10);
+        this->refGrad() = -(*this)*Damkholer;
+    #};
+
+};
+
+RobinMixed
+{
+    type            codedMixed;
+
+    refValue        uniform 0;
+    refGradient     uniform 0;
+    valueFraction   uniform 0.5;
+
+    name            RobinMixed;   
+
+    code
+    #{
+        scalar Damkholer(10);
+        this->refGrad() = (*this)*Damkholer;
+        this->refValue() = this->snGrad()/Damkholer;
+    #};
+
+};
+
+
+RobinImplicit
+{
+    type            Robin;
+    RobinD          uniform 1;
+    RobinK          uniform -10;
+    RobinF          uniform 0;
+    value           uniform 0;
+};

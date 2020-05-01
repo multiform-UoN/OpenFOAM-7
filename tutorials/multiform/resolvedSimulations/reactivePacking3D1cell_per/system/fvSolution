@@ -1,0 +1,106 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  6
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      fvSolution;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+spectralCellControls
+{
+lambda0      1;
+nNonOrthogonalCorrectors 10;
+}
+
+solvers
+{
+    p
+    {
+        solver          GAMG;//PCG;
+        smoother        DIC;
+        preconditioner  DIC;
+        tolerance       1e-12;
+        relTol          1e-4;
+		maxIter 		50;
+    }
+
+    pFinal
+    {
+        $p;
+        relTol          0;
+    }
+
+    U
+    {
+        //type            coupled;  // optional, defaults to segregated
+        solver          GAMG;//PBiCCCG;
+        preconditioner  DILU;
+        smoother        DILU;
+        tolerance       1e-12;//(1e-12 1e-12 1e-12);
+        relTol          1e-4;//(1e-4 1e-4 1e-4);
+
+        //solver          GAMG;
+        //smoother        DILU;
+        //tolerance       1e-12;
+        //relTol          0.01;
+    }
+
+    T
+    {
+        solver          PBiCGStab;
+        preconditioner  DILU;
+        tolerance       1e-10;
+        relTol          1e-4;
+    }
+
+    yPsi
+    {
+        solver          GAMG;
+        smoother        GaussSeidel;
+        cacheAgglomeration true;
+        nCellsInCoarsestLevel 10;
+        agglomerator    faceAreaPair;
+        mergeLevels     1;
+        tolerance       1e-5;
+        relTol          0;
+    }
+}
+
+SIMPLE
+{
+
+    #include    "residualControl"
+
+    nNonOrthogonalCorrectors 0;
+    pRefCell        0;
+    pRefValue       0;
+    consistent yes;
+}
+
+relaxationFactors
+{
+    fields
+    {
+        p               1;
+        U               1;
+    }
+     equations
+     {
+         U               0.99;
+         T               0.3;
+     }
+}
+
+
+
+
+// ************************************************************************* //

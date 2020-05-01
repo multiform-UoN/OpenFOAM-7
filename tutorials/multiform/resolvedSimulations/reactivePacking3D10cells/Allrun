@@ -1,0 +1,39 @@
+#!/bin/bash
+
+# Source tutorial clean functions
+. $WM_PROJECT_DIR/bin/tools/CleanFunctions
+. $WM_PROJECT_DIR/bin/tools/RunFunctions
+
+echo "Geometry was generated in octave".
+echo "Check the octave folder for generating new geometries."
+
+# Create mesh
+runApplication blockMesh
+#runApplication decomposePar
+runApplication snappyHexMesh -overwrite
+rm -f 0/T
+runApplication decomposePar
+
+# Run simlpeFoam
+cp system/controlDict.simpleFoam system/controlDict
+cp system/residualControl.simple system/residualControl
+runParallel simpleFoam
+find . -name 'phi' -exec rm -rf {} \;
+runApplication reconstructPar
+
+sed -i 's/cyclic/patch/g' constant/polyMesh/boundary
+#for i in proc*
+#do
+#  sed -i 's/cyclic/symmetry/g' $i/constant/polyMesh/boundary
+#  sed -i 's/cyclic/symmetry/g' $i/0/*
+#done
+
+foamEndTime=$(foamListTimes -latestTime)
+mv $foamEndTime/U 0/.
+sed -i 's/cyclic/zeroGradient/g' 0/*
+foamListTimes -rm
+cp system/controlDict.scalar system/controlDict
+cp 0.scalar/* 0/
+runApplication decomposePar -force -time 0
+cp system/residualControl.scalar system/residualControl
+runParallel scalarTransportFoam

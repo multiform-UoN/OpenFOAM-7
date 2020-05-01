@@ -85,3 +85,7 @@ doc/Doxygen/DTAGS
 
 # Ignore the test directory
 /tutorialsTest
+
+# system files
+.DS_Store
+

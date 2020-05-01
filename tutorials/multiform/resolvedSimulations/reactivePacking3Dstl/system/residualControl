@@ -1,0 +1,5 @@
+residualControl
+{
+    p               1e-5;
+    U               1e-5;
+}

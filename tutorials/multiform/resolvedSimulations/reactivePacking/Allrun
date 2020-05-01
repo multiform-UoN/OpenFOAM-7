@@ -1,0 +1,28 @@
+#!/bin/bash
+
+echo "Usage: ./Allrun packing_type porosity ncells resolution"
+
+
+# Source tutorial clean functions
+. $WM_PROJECT_DIR/bin/tools/CleanFunctions
+. $WM_PROJECT_DIR/bin/tools/RunFunctions
+cleanCase
+
+rm -r 0
+cp -r 0.init 0
+
+cd system
+python create_geometry.py $1 $2 $3 $4 1 1
+cd ..
+runApplication blockMesh
+runApplication snappyHexMesh -overwrite
+cp  0.init/* 0/.
+cp system/residualControl.simple system/residualControl
+runApplication simpleFoam
+foamEndTime=$(foamListTimes | tail -1)
+if [ -d $foamEndTime ]; then
+   mv $foamEndTime/* 0/.
+   rm -r $foamEndTime
+fi
+cp system/residualControl.scalar system/residualControl
+runApplication scalarTransportFoam

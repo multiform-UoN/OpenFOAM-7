@@ -101,7 +101,7 @@ newMappedPatchFieldBase<Type>::mappedVolField(word& name) const
                  << abort(FatalError);
             }
 
-            const fieldType& nbrField = sampleVolField(name);
+            const fieldType& nbrField = sampleVolField<T>(name);
 
             newValues = nbrField.boundaryField()[nbrPatchID];
             mapper_.distribute(newValues);
@@ -158,7 +158,7 @@ newMappedPatchFieldBase<Type>::mappedGradField(word& name) const
                  << abort(FatalError);
             }
 
-            const fieldType& nbrField = sampleVolField(name);
+            const fieldType& nbrField = sampleVolField<T>(name);
 
             newValues =
               nbrField.boundaryField()[nbrPatchID].patch().deltaCoeffs() *
@@ -220,11 +220,11 @@ newMappedPatchFieldBase<Type>::mappedInternalField(word& name) const
                  << abort(FatalError);
             }
 
-            const fieldType& nbrField = sampleVolField(name);
+            const fieldType& nbrField = sampleVolField<T>(name);
 
             newValues =
               nbrField.boundaryField()[nbrPatchID].patchInternalField();
-              
+
             mapper_.distribute(newValues);
 
         }
@@ -279,7 +279,7 @@ newMappedPatchFieldBase<Type>::mappedSurField(word& name) const
                  << abort(FatalError);
             }
 
-            const fieldType& nbrField = sampleSurField(name);
+            const fieldType& nbrField = sampleSurField<T>(name);
 
             newValues = nbrField.boundaryField()[nbrPatchID];
             mapper_.distribute(newValues);
