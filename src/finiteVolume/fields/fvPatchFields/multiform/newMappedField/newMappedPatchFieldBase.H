@@ -64,27 +64,6 @@ template<class> class interpolation;
 template<class Type>
 class newMappedPatchFieldBase
 {
-private:
-
-    // Private data
-
-        //- Sample generic fields
-        template<class T>
-        const GeometricField<T, fvPatchField, volMesh>&
-        sampleVolField(word& name) const;
-
-        template<class T>
-        const GeometricField<T, fvsPatchField, surfaceMesh>&
-        sampleSurField(word& name) const;
-
-
-        //- get vol field on nbr patch
-        template<class T>
-        tmp<Field<T>> mappedVolField(word& name) const;
-
-        //- get surface field on nbr patch
-        template<class T>
-        tmp<Field<T>> mappedSurField(word& name) const;
 
 protected:
 
@@ -108,7 +87,6 @@ protected:
 
         //- Interpolation scheme to use for nearestcell mode
         word interpolationScheme_;
-
 
 public:
 
@@ -164,6 +142,15 @@ public:
 
         //- Field to sample. Either on my or nbr mesh
         const GeometricField<Type, fvPatchField, volMesh>& sampleField() const;
+        //- Sample generic fields
+        template<class T>
+        const GeometricField<T, fvPatchField, volMesh>&
+        sampleVolField(word& name) const;
+
+        template<class T>
+        const GeometricField<T, fvsPatchField, surfaceMesh>&
+        sampleSurField(word& name) const;
+
 
         //- Value of nbr patch
         virtual tmp<Field<Type>> newMappedField() const;
@@ -176,6 +163,22 @@ public:
 
         //- internalField on nbr patch
         virtual tmp<Field<Type>> newMappedInternalField() const;
+
+        //- get vol field on nbr patch
+        template<class T>
+        tmp<Field<T>> mappedVolField(word& name) const;
+
+        //- get gradient of vol field on nbr patch
+        template<class T>
+        tmp<Field<T>> mappedGradField(word& name) const;
+
+        //- get internal vol field on nbr patch
+        template<class T>
+        tmp<Field<T>> mappedInternalField(word& name) const;
+
+        //- get surface field on nbr patch
+        template<class T>
+        tmp<Field<T>> mappedSurField(word& name) const;
 
         //- Write
         virtual void write(Ostream&) const;
