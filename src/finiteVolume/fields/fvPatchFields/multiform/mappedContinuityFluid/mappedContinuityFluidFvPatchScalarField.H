@@ -65,7 +65,8 @@ class mappedContinuityFluidFvPatchScalarField
     public RobinFvPatchScalarField,
     public newMappedPatchFieldBase<scalar>
 {
-private:
+
+protected:
 
     //- Flux variable
     word phiName_;
@@ -78,9 +79,6 @@ private:
 
     //- Effective Dsolid_
     scalarField Dsolid_;
-
-
-protected:
 
     // Protected Member Functions
 

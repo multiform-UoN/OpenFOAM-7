@@ -27,6 +27,7 @@ gradSchemes
 divSchemes
 {
     default         Gauss linear;
+    div(phi,T)      bounded Gauss vanLeer01;
 }
 
 laplacianSchemes
@@ -47,7 +48,6 @@ snGradSchemes
 fluxRequired
 {
     default         no;
-    p                 ;
 }
 
 wallDist

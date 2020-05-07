@@ -63,20 +63,20 @@ PIMPLE
     {
         ".*"
         {
-            tolerance 1e-14;
+            tolerance 1e-08;
             relTol    0;
         }
 
     }
     residualControl
     {
-        ".*"   1e-14;
+        ".*"   1e-08;
 
     }
 
     }
     nCorrectors     1;
-    nNonOrthogonalCorrectors 0;
+    nNonOrthogonalCorrectors 2;
     pRefCell        0;
     pRefValue       0;
 }
