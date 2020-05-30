@@ -23,13 +23,13 @@ startTime       0;
 
 stopAt          endTime;
 
-endTime         1;
+endTime         10;
 
-deltaT          1e-3;
+deltaT          10e-3;
 
-writeControl    timeStep;
+writeControl    runTime;
 
-writeInterval   10;
+writeInterval   1e-2;
 
 purgeWrite      0;
 
@@ -43,7 +43,7 @@ timeFormat      general;
 
 timePrecision   6;
 
-runTimeModifiable true;
+runTimeModifiable false;
 
 
 // ************************************************************************* //

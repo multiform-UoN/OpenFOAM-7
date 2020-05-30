@@ -10,6 +10,12 @@ alphaInit  #codeStream
               (
               scalar(0.1)
               *
+              Foam::cos(scalar(0.2)*pi*mesh.C().component(0))
+              *
+              Foam::cos(scalar(0.2)*pi*mesh.C().component(1))
+              +
+              scalar(0.1)
+              *
               Foam::cos(scalar(2.)*pi*mesh.C().component(0))
               *
               Foam::cos(scalar(2.)*pi*mesh.C().component(1))
