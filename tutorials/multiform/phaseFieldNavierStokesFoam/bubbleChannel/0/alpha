@@ -1,0 +1,82 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  7
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volScalarField;
+    object      alpha;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+#include "../constant/initialConditions"
+
+dimensions      [0 0 0 0 0 0 0];
+
+internalField  uniform 1;//$alphaInit;
+
+
+boundaryField
+{
+    inlet
+    {
+        type            codedFixedValue;
+        value           uniform 0;
+        name    oscillatingFixedValue;   // name of generated BC
+
+        code
+        #{
+
+            scalar tau(3);
+
+            operator==(
+                (
+                          (
+
+                          Foam::cos(2*M_PI*patch().Cf().component(0))
+                          )
+                          *
+                          Foam::cos(scalar(2.)*M_PI*this->db().time().value()/tau)
+                        )
+                    );
+        #};
+
+        // codeInclude
+        //#{
+        //    #include "fvCFD.H"
+        //#};
+
+        // codeOptions
+        //#{
+        //    -I$(LIB_SRC)/finiteVolume/lnInclude
+        //#};
+    }
+
+
+    atmosphere
+    {
+        type            zeroGradient;
+    }
+
+    walls
+    {
+        type           fixedValue;//constantAlphaContactAngle;
+        theta0         0;
+        limit          gradient;
+        value          uniform 1;
+
+    }
+
+    defaultFaces
+    {
+        type            empty;
+    }
+}
+
+
+// ************************************************************************* //

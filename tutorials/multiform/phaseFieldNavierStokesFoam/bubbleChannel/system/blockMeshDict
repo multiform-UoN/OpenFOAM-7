@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     | Website:  https://openfoam.org
-    \\  /    A nd           | Version:  6
+    \\  /    A nd           | Version:  7
      \\/     M anipulation  |
 \*---------------------------------------------------------------------------*/
 FoamFile
@@ -14,34 +14,23 @@ FoamFile
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-scalegrid 1;
-x1 0.000000;
-y1 0.000000;
-z1 0.000000;
-x2 1.000000;
-y2 1.000000;
-z2 1.000000;
-xgrid 128;
-ygrid 128;
-zgrid 1;
-
-convertToMeters $scalegrid;
+convertToMeters 1;
 
 vertices
 (
-    ($x1 $y1 -0.1)
-    ($x2 $y1 -0.1)
-    ($x2 $y2 -0.1)
-    ($x1 $y2 -0.1)
-    ($x1 $y1 0.1)
-    ($x2 $y1 0.1)
-    ($x2 $y2 0.1)
-    ($x1 $y2 0.1)
+    (0 0 0)
+    (1 0 0)
+    (1 10 0)
+    (0 10 0)
+    (0 0 1)
+    (1 0 1)
+    (1 10 1)
+    (0 10 1)
 );
 
 blocks
 (
-    hex (0 1 2 3 4 5 6 7) ($xgrid $ygrid $zgrid) simpleGrading (1 1 1)
+    hex (0 1 2 3 4 5 6 7) (20 200 1) simpleGrading (1 1 1)
 );
 
 edges
@@ -50,62 +39,45 @@ edges
 
 boundary
 (
-  up
-  {
-      type cyclic;
-      neighbourPatch down;
-      faces
-      (
-          (3 7 6 2)
-      );
-  }
-
-  down
-  {
-      type cyclic;
-      neighbourPatch up;
-      faces
-      (
-          (1 5 4 0)
-      );
-  }
-
     inlet
     {
-        type cyclic;
-        neighbourPatch outlet;
+        type patch;
+        faces
+        (
+            (1 5 4 0)
+        );
+    }
+    atmosphere
+    {
+        type patch;
+        faces
+        (
+            (3 7 6 2)
+        );
+    }
+    walls
+    {
+        type wall;
         faces
         (
             (0 4 7 3)
-        );
-    }
-
-    outlet
-    {
-        type cyclic;
-        neighbourPatch inlet;
-        faces
-        (
             (2 6 5 1)
         );
     }
-
-
     frontAndBack
     {
-        type        empty;
+        type empty;
         faces
         (
             (0 3 2 1)
             (4 5 6 7)
         );
     }
-
-
 );
 
 mergePatchPairs
 (
 );
+
 
 // ************************************************************************* //
