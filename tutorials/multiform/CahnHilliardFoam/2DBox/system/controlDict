@@ -23,9 +23,9 @@ startTime       0;
 
 stopAt          endTime;
 
-endTime         10;
+endTime         40;
 
-deltaT          10e-3;
+deltaT          500e-3;
 
 writeControl    runTime;
 
@@ -43,7 +43,7 @@ timeFormat      general;
 
 timePrecision   6;
 
-runTimeModifiable false;
+runTimeModifiable true;
 
 
 // ************************************************************************* //

@@ -46,7 +46,7 @@ Authors:
 #ifndef dynamicRetentionFvPatchScalarField_H
 #define dynamicRetentionFvPatchScalarField_H
 
-#include "RobinFvPatchFields.H"
+#include "RobinPhiFvPatchScalarField.H"
 #include "retentionRate.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
@@ -60,7 +60,7 @@ namespace Foam
 
 class dynamicRetentionFvPatchScalarField
 :
-    public RobinFvPatchScalarField
+    public RobinPhiFvPatchScalarField
 {
 private:
 
@@ -77,8 +77,8 @@ private:
     //- Reversible reaction rate Kd
     scalarField Kd_;
 
-    //- Switch to activate shear induced detachment
-    Switch  shearDetachment_;
+    // //- Switch to activate shear induced detachment
+    // Switch  shearDetachment_;
 
     //- Effective RobinF_
     scalarField RobinFeff_;
@@ -93,11 +93,8 @@ private:
     //- Pointer to detachment rate
     autoPtr<retentionRates::retentionRate> dR_;
 
-	//- Pointer to shear induced detachment rate
-    autoPtr<retentionRates::retentionRate> sdR_;
-
-    scalar SSp_;
-    scalar SSu_;
+	// //- Pointer to shear induced detachment rate
+  //   autoPtr<retentionRates::retentionRate> sdR_;
 
 public:
 
@@ -185,19 +182,14 @@ public:
 
         // Member functions
 
-            void SSp(dimensionedScalar source)
-            {
-                SSp_ = source.value();
-            }
-
-            void SSu(dimensionedScalar source)
-            {
-                SSu_ = source.value();
-            }
-
             scalar Savg() const
             {
                 return gSum(this->patch().magSf()*S_)/gSum(this->patch().magSf());
+            }
+
+            scalarField S() const
+            {
+                return S_;
             }
 
             void rescaleS(scalar avg)

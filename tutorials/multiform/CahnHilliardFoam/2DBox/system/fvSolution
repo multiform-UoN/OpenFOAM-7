@@ -22,7 +22,7 @@ solvers
         solver          PBiCGStab;
         preconditioner  diagonal;
         tolerance       1e-8;
-        relTol          1e-3;
+        relTol          1e-1;
     }
 
     alphaFinal
@@ -38,7 +38,7 @@ PIMPLE
 {
 
     nNonOrthogonalCorrectors 1;
-    nOuterCorrectors 300;
+    nOuterCorrectors 400;
 
     outerCorrectorResidualControl
     {
@@ -68,7 +68,7 @@ relaxationFactors
 
     fields
     {
-        alpha   0.9;
+        alpha   0.99;
         alphaFinal 1;
         mu      1;
         muFinal 1;

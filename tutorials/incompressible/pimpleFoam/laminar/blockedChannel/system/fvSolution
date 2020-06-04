@@ -50,6 +50,14 @@ PIMPLE
 {
     nNonOrthogonalCorrectors 0;
     nCorrectors         2;
+    nOuterCorrectors    20;
+    outerCorrectorResidualControl //residualControl
+    {
+        ".*"
+        {
+            tolerance 1e-4;
+            relTol    0;
+        }
 }
 
 

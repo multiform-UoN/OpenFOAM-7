@@ -53,8 +53,8 @@ boundaryField
 	topmid
     {
         type            fixedFluxPressure;//fixedValue;
-        value           uniform 100;
-    }	
+        value           uniform 1;
+    }
 
     bottom
     {

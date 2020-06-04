@@ -21,7 +21,6 @@ for more details.
 You should have received a copy of the GNU General Public License
 along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
-
 \*---------------------------------------------------------------------------*/
 
 #include "dynamicRetentionFvPatchScalarField.H"
@@ -39,18 +38,16 @@ Foam::dynamicRetentionFvPatchScalarField::dynamicRetentionFvPatchScalarField
   const DimensionedField<scalar, volMesh>& iF
 )
 :
-RobinFvPatchScalarField(p, iF),
+RobinPhiFvPatchScalarField(p, iF),
 S_(p.size()),
 S0_(p.size()),
 RobinKeff_(p.size()),
 Kd_(p.size()),
-shearDetachment_(false),
+// shearDetachment_(false),
 RobinFeff_(p.size()),
 timeIndex_(-1),
 rR_(NULL),
-dR_(NULL),
-SSp_(scalar(0)),
-SSu_(scalar(0))
+dR_(NULL)
 {
 
 }
@@ -63,12 +60,12 @@ Foam::dynamicRetentionFvPatchScalarField::dynamicRetentionFvPatchScalarField
   const dictionary& dict
 )
 :
-RobinFvPatchScalarField(p, iF, dict),
+RobinPhiFvPatchScalarField(p, iF, dict),
 S_("S",dict,p.size()),
 S0_(S_),
 RobinKeff_(p.size(),scalar(0)),
 Kd_("Kd",dict,p.size()),
-shearDetachment_(dict.lookupOrDefault<bool>("shearDetachment",false)),
+// shearDetachment_(dict.lookupOrDefault<bool>("shearDetachment",false)),
 RobinFeff_(p.size(),scalar(0)),
 timeIndex_(iF.mesh().time().timeIndex()),
 rR_
@@ -84,21 +81,19 @@ dR_
   (
     dict.subDict("backwardReaction")
   )
-),
-SSp_(scalar(0)),
-SSu_(scalar(0))
+)
 {
-  if(shearDetachment_)
-  {
-    sdR_.set
-    (
-      retentionRates::retentionRate::New
-      (
-        dict.subDict("shearDetachmentRate")
-      ).ptr()
-    );
-
-  }
+  // if(shearDetachment_)
+  // {
+  //   sdR_.set
+  //   (
+  //     retentionRates::retentionRate::New
+  //     (
+  //       dict.subDict("shearDetachmentRate")
+  //     ).ptr()
+  //   );
+  //
+  // }
 }
 
 
@@ -110,15 +105,13 @@ Foam::dynamicRetentionFvPatchScalarField::dynamicRetentionFvPatchScalarField
   const fvPatchFieldMapper& mapper
 )
 :
-RobinFvPatchScalarField(p, iF),
+RobinPhiFvPatchScalarField(p, iF),
 S_(mapper(ptf.S_)),//,mapper),
 S0_(mapper(ptf.S0_)),//,mapper),
 RobinKeff_(mapper(ptf.RobinKeff_)),//,mapper),
 Kd_(mapper(ptf.Kd_)),//,mapper),
 RobinFeff_(mapper(ptf.RobinFeff_)),//,mapper),
-timeIndex_(ptf.timeIndex_),
-SSp_(scalar(0)),
-SSu_(scalar(0))
+timeIndex_(ptf.timeIndex_)
 {
 
 }
@@ -129,16 +122,14 @@ Foam::dynamicRetentionFvPatchScalarField::dynamicRetentionFvPatchScalarField
   const dynamicRetentionFvPatchScalarField& ptf
 )
 :
-RobinFvPatchScalarField(ptf),
+RobinPhiFvPatchScalarField(ptf),
 S_(ptf.S_),
 S0_(ptf.S0_),
 RobinKeff_(ptf.RobinKeff_),
 Kd_(ptf.Kd_),
-shearDetachment_(ptf.shearDetachment_),
+// shearDetachment_(ptf.shearDetachment_),
 RobinFeff_(ptf.RobinFeff_),
-timeIndex_(ptf.timeIndex_),
-SSp_(scalar(0)),
-SSu_(scalar(0))
+timeIndex_(ptf.timeIndex_)
 {
 
 }
@@ -150,16 +141,14 @@ Foam::dynamicRetentionFvPatchScalarField::dynamicRetentionFvPatchScalarField
   const DimensionedField<scalar, volMesh>& iF
 )
 :
-RobinFvPatchScalarField(ptf, iF),
+RobinPhiFvPatchScalarField(ptf, iF),
 S_(ptf.S_),
 S0_(ptf.S0_),
 RobinKeff_(ptf.RobinKeff_),
 Kd_(ptf.Kd_),
-shearDetachment_(ptf.shearDetachment_),
+// shearDetachment_(ptf.shearDetachment_),
 RobinFeff_(ptf.RobinFeff_),
-timeIndex_(ptf.timeIndex_),
-SSp_(scalar(0)),
-SSu_(scalar(0))
+timeIndex_(ptf.timeIndex_)
 {
 
 }
@@ -171,7 +160,7 @@ void Foam::dynamicRetentionFvPatchScalarField::autoMap
   const fvPatchFieldMapper&   m
 )
 {
-  RobinFvPatchScalarField::autoMap(m);
+  RobinPhiFvPatchScalarField::autoMap(m);
   m(S_,S_);//S_.autoMap(mapper);
   m(S0_,S0_);//S0_.autoMap(mapper);
   m(RobinKeff_,RobinKeff_);//.autoMap(mapper);
@@ -185,11 +174,9 @@ void Foam::dynamicRetentionFvPatchScalarField::rmap
   const labelList& addr
 )
 {
-  RobinFvPatchScalarField::rmap(ptf,addr);
-
+  RobinPhiFvPatchScalarField::rmap(ptf,addr);
   const dynamicRetentionFvPatchScalarField& mptf =
   refCast<const dynamicRetentionFvPatchScalarField>(ptf);
-
   S_.rmap(mptf.S_,addr);
   S0_.rmap(mptf.S0_,addr);
   RobinKeff_.rmap(mptf.RobinKeff_,addr);
@@ -201,11 +188,11 @@ void Foam::dynamicRetentionFvPatchScalarField::rmap
 
 void Foam::dynamicRetentionFvPatchScalarField::write(Ostream& os) const
 {
-  RobinFvPatchScalarField::write(os);
+  RobinPhiFvPatchScalarField::write(os);
   writeEntry(os, "Kd", Kd_);
-  writeEntry(os, "shearDetachment", shearDetachment_);
+  // writeEntry(os, "shearDetachment", shearDetachment_);
   writeEntry(os, "S", S_);
-  writeEntry(os, "RobinKeff", RobinKeff_);
+  writeEntry(os, "RobinKeff2", RobinKeff_);
   writeEntry(os, "RobinFeff", RobinFeff_);
 
   if(!rR_.valid() || !dR_.valid())
@@ -217,11 +204,11 @@ void Foam::dynamicRetentionFvPatchScalarField::write(Ostream& os) const
   rR_().write(os);
   os<<"\n        backwardReaction	";
   dR_().write(os);
-  if(shearDetachment_)
-  {
-    os<<"\n        shearDetachmentRate	";
-    sdR_().write(os);
-  }
+  // if(shearDetachment_)
+  // {
+  //   os<<"\n        shearDetachmentRate	";
+  //   sdR_().write(os);
+  // }
 
 }
 
@@ -247,21 +234,21 @@ void Foam::dynamicRetentionFvPatchScalarField::evaluate
   }
 
   scalarField& C(*this);
-  const scalarField& RobinK0 = RobinFvPatchScalarField::RobinK();
-  const scalarField& RobinF0 = RobinFvPatchScalarField::RobinF();
+  const scalarField& RobinK0 = RobinPhiFvPatchScalarField::RobinK();
+  const scalarField& RobinF0 = RobinPhiFvPatchScalarField::RobinF();
   const scalar area(gSum(this->patch().magSf()));
 
-  //- Evaluate shear rate (always computed)
-  const volVectorField& U(this->db().lookupObject<volVectorField>("U"));
-  const scalarField srb
-  (
-    mag
-    (
-      ( tensor::I - (this->patch().nf()*this->patch().nf()) )
-      & (fvc::grad(U))->boundaryField()[this->patch().index()]
-      & this->patch().nf()
-    )
-  );
+  // //- Evaluate shear rate (always computed)
+  // const volVectorField& U(this->db().lookupObject<volVectorField>("U"));
+  // const scalarField srb
+  // (
+  //   mag
+  //   (
+  //     ( tensor::I - (this->patch().nf()*this->patch().nf()) )
+  //     & (fvc::grad(U))->boundaryField()[this->patch().index()]
+  //     & this->patch().nf()
+  //   )
+  // );
 
   //- Get old time concentration
   if(timeIndex_!=this->db().time().timeIndex())
@@ -279,17 +266,16 @@ void Foam::dynamicRetentionFvPatchScalarField::evaluate
         rR_().ddS(S0_)*S0_
       )
       + S0_/deltaT
-      + SSp_*S_ + SSu_
     )
     /
     (
       scalar(1)/deltaT
       + RobinK0*C*rR_().ddS(S0_)
       - (
-        shearDetachment_
-        ?
-        Kd_*(dR_().value((*this))) - sdR_().value(srb)
-        :
+        // shearDetachment_
+        // ?
+        // Kd_*(dR_().value((*this))) - sdR_().value(srb)
+        // :
         Kd_*(dR_().value((*this)))
       )
     );
@@ -304,10 +290,10 @@ void Foam::dynamicRetentionFvPatchScalarField::evaluate
     - S_*
     (
       (
-        shearDetachment_
-        ?
-        Kd_*(dR_().value(C)) - sdR_().value(srb)
-        :
+        // shearDetachment_
+        // ?
+        // Kd_*(dR_().value(C)) - sdR_().value(srb)
+        // :
         Kd_*(dR_().value(C))
       )
       - Kd_*dR_().ddS(C)*C
@@ -337,27 +323,25 @@ void Foam::dynamicRetentionFvPatchScalarField::evaluate
     (
       RobinK0*C*rR_().value(Sn)
       - (
-        shearDetachment_
-        ?
-        Kd_*(dR_().value(C)) - sdR_().value(srb)
-        :
+        // shearDetachment_
+        // ?
+        // Kd_*(dR_().value(C)) - sdR_().value(srb)
+        // :
         Kd_*(dR_().value(C))
         )*Sn
       + (Sn-S0_)/deltaT
-      - SSp_*Sn - SSu_
     )
     /
     (
       scalar(1)/deltaT
       + RobinK0*C*rR_().ddS(Sn)
       - (
-        shearDetachment_
-        ?
-        Kd_*(dR_().value(C)) - sdR_().value(srb)
-        :
+        // shearDetachment_
+        // ?
+        // Kd_*(dR_().value(C)) - sdR_().value(srb)
+        // :
         Kd_*(dR_().value(C))
         )
-      - SSp_
     );
     n++;
 
@@ -371,10 +355,10 @@ void Foam::dynamicRetentionFvPatchScalarField::evaluate
     - S_*
     (
       (
-        shearDetachment_
-        ?
-        Kd_*(dR_().value(C)) - sdR_().value(srb)
-        :
+        // shearDetachment_
+        // ?
+        // Kd_*(dR_().value(C)) - sdR_().value(srb)
+        // :
         Kd_*(dR_().value(C))
       )
       - Kd_*dR_().ddS(C)*C
@@ -401,8 +385,8 @@ void Foam::dynamicRetentionFvPatchScalarField::evaluate
   << " Cf=" << gSum(this->patch().magSf()*C)/gSum(this->patch().magSf())
   << " R=" << gSum(this->patch().magSf()*(RobinKeff_*C + RobinFeff_))/area
   << " dSdt=" << gSum(this->patch().magSf()*(S_-S0_)/deltaT)/area
-  << " dCdn=" << gSum(this->patch().magSf()*this->snGrad())/area
-  << " Shear=" << gSum(srb*this->patch().magSf())/area << endl;
+  << " dCdn=" << gSum(this->patch().magSf()*this->snGrad())/area << endl;
+  // << " Shear=" << gSum(srb*this->patch().magSf())/area << endl;
 
 
   //    RobinFvPatchScalarField::evaluate();

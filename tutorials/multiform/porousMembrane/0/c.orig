@@ -35,13 +35,13 @@ boundaryField
         type            zeroGradient;
     }
 
-   top
+    top
     {
         type            zeroGradient;
        // value           uniform 1;
     }
 
- topmid
+    topmid
     {
         type            fixedValue;
         value           uniform 1;
@@ -49,7 +49,21 @@ boundaryField
 
     bottom
     {
-        type            noFlux;
+        type            dynamicRetention;
+        RobinD          uniform 1e-5;  //PUT THE DIFFUSION COEFFICIENT HERE
+        RobinK          uniform -1;
+
+        value           uniform 0;
+        S               uniform 0;
+        Kd              uniform 0;
+        forwardReaction
+        {
+          type          constant;
+        }
+        backwardReaction
+        {
+          type          constant;
+        }
     }
 
     frontAndBack
