@@ -39,7 +39,20 @@ boundaryField
 
     bottom
     {
-        type            noFlux;
+        type            dynamicRetention;
+        value uniform 0;
+        S uniform 0;
+        RobinD   uniform 1e-5;
+        RobinK   uniform -1e-5;
+        forwardReaction
+        {
+          type constant;
+        }
+        backwardReaction
+        {
+          type constant;
+        }
+        Kd uniform 0;
     }
 
     frontAndBack

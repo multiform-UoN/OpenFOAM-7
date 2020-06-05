@@ -17,19 +17,19 @@ FoamFile
 
 application     scalarTransportFoam;
 
-startFrom       latestTime;
+startFrom       startTime;
 
 startTime       0;
 
 stopAt          endTime;
 
-endTime         1000;
+endTime         100000;
 
 deltaT          5;
 
-writeControl    timeStep;
+writeControl    runTime;
 
-writeInterval   20;
+writeInterval   100;
 
 purgeWrite      0;
 

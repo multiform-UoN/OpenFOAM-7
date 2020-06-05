@@ -22,7 +22,7 @@ internalField uniform (0 0 0);
 boundaryField
 {
 
-    wall    
+    wall
     {
         type            noSlip;
         //value           uniform (0 0 0);
@@ -55,10 +55,10 @@ boundaryField
 
         code
         #{
- //         const tensor K(1e-7*tensor::I);
-          // original permeability of the membrane
-          const scalar Kl(1e-9);
-
+          // initial permeability of the membrane
+          const scalar K0(1e-9);
+          // initial porosity of the membrane
+          const scalar phi0(0.5);
           // membrane width
           const scalar L=1e-4;
 
@@ -69,21 +69,32 @@ boundaryField
           const GeometricField<scalar, fvPatchField, volMesh>& cfield =
             this->db().objectRegistry::
                 lookupObject<GeometricField<scalar, fvPatchField, volMesh> >("c");
+
+          // index of this boundary
           label patchi=this->patch().index();
-//          const volVectorField gradp(fvc::grad(pfield));
 
           // concentration on the membrane surface
-          scalarField cc(cfield.boundaryField()[patchi]);
+          const fvPatchScalarField& cc(cfield.boundaryField()[patchi]);
+
+          // solid concentration on the surface
+          const dynamicRetentionFvPatchScalarField& Cpr
+          (
+            refCast<const dynamicRetentionFvPatchScalarField>(cc)
+          );
+
+          // porosity ratio
+          const scalarField phir((phi0-Cpr.S())/phi0);
+          // 1-porosity ratio
+          const scalarField psir((scalar(1)-phi0+Cpr.S())/(scalar(1)-phi0));
 
           // compute permeability of the membrane
           vectorField K
                         (
-                          this->size(),
-                          vector(0,Kl/L,0) * exp(-cc)
+                          vector(0,K0/L,0) * pow(phir,2)/pow(psir,3)
                         );
-          
+
           Info << "Average permeability " << gSum(K)/K.size() << endl;
-          
+
           // set outlet velocity through the membrane
           // assuming the pressure outside is p=0
           operator==( - K*(pfield.boundaryField()[patchi]) );
@@ -92,6 +103,7 @@ boundaryField
         codeInclude
         #{
             #include "fvCFD.H"
+            #include "dynamicRetentionFvPatchScalarField.H"
         #};
 
         codeOptions
