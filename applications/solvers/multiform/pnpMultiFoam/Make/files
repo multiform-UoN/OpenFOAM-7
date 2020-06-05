@@ -1,3 +1,0 @@
-pnpMultiFoam.C
-
-EXE = $(FOAM_APPBIN)/pnpMultiFoam

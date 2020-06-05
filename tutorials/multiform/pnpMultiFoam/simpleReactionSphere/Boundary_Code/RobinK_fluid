@@ -1,8 +1,0 @@
-//TO DO:
-//	Find the diffusion coefficient of species
-//	Find the charge number of species
-//	Find Faradays constant
-//	Find Gas constant
-//	Find Temperature at patch
-//	Construct snGrad(V) for fluid and solid side
-//	Return RobinK_fluid = (e_*z_{i})/(k_*T)*D_{i}*(snGrad(V_S) - snGrad(V_F))
