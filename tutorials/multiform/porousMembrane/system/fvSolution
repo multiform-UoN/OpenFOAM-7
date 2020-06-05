@@ -108,7 +108,7 @@ relaxationFactors
 {
     equations
     {
-        U 1.0;
+        U 0.99;
     }
 }
 
