@@ -27,7 +27,7 @@ actions
         source boxToFace;
         sourceInfo
         {
-            box  (-1 -1 -1) (1e-5 0.3 1);
+            box  (-1 0.05 -1) (1e-5 0.35 1);
            // boxes   ((0 0 0) (1 1 1) (10 10 10)(11 11 11));
         }
     }

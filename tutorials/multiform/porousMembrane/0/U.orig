@@ -22,14 +22,10 @@ internalField uniform (0 0 0);
 boundaryField
 {
 
-    inlet
+    wall    
     {
         type            noSlip;
         //value           uniform (0 0 0);
-    }
-    outlet
-    {
-        type           noSlip;
     }
 
     side
@@ -42,12 +38,6 @@ boundaryField
         type            empty;
     }
 
-    top
-    {
-	type noSlip;
-       // type zeroGradient;
-        //value uniform (0 -1 0);
-    }
 
 	 topmid
     {   type fixedValue;
@@ -58,17 +48,16 @@ boundaryField
     {
         //type fixedValue;
         //value (1e-3 -1e-3 0);
-        type            fixedValue;//codedFixedValue;
+        type            codedFixedValue;
         value           uniform (0 0 0);
 
         redirectType    porousMembrane;
 
         code
         #{
-          // initial permeability of the membrane
-          const scalar K0(1e-19);
-          // initial porosity of the membrane
-          const scalar phi0(0.5);
+ //         const tensor K(1e-7*tensor::I);
+          // original permeability of the membrane
+          const scalar Kl(1e-9);
 
           // membrane width
           const scalar L=1e-4;
@@ -80,43 +69,29 @@ boundaryField
           const GeometricField<scalar, fvPatchField, volMesh>& cfield =
             this->db().objectRegistry::
                 lookupObject<GeometricField<scalar, fvPatchField, volMesh> >("c");
-
-          // retrieve the index of this buondary
           label patchi=this->patch().index();
-          //  const volVectorField gradp(fvc::grad(pfield));
+//          const volVectorField gradp(fvc::grad(pfield));
 
           // concentration on the membrane surface
-          const fvPatchScalarField& cc = cfield.boundaryField()[patchi];
-
-          // dynamicRetention BC
-          const dynamicRetentionFvPatchScalarField& Cpr
-          (
-          refCast<const dynamicRetentionFvPatchScalarField>(cc)
-          );
-
-          // Compute porosity here
-          scalarField phir((phi0+Cpr.S())/phi0); // porosity ratio
-          scalarField psir((scalar(1)-phi0+Cpr.S())/(scalar(1)-phi0));  // 1-porosity ratio
+          scalarField cc(cfield.boundaryField()[patchi]);
 
           // compute permeability of the membrane
           vectorField K
                         (
-                          //this->size(),
-                          vector(0,K0/L,0) * pow(phir,2)/pow(psir,3)  // REPLACE HERE THE FORMULA FOR KOZENY KARMAN
+                          this->size(),
+                          vector(0,Kl/L,0) * exp(-cc)
                         );
-
+          
           Info << "Average permeability " << gSum(K)/K.size() << endl;
-
+          
           // set outlet velocity through the membrane
           // assuming the pressure outside is p=0
           operator==( - K*(pfield.boundaryField()[patchi]) );
                     //-K & gradp.boundaryField()[patchi]
         #};
-
         codeInclude
         #{
             #include "fvCFD.H"
-            #include "dynamicRetentionFvPatchScalarField.H"
         #};
 
         codeOptions
