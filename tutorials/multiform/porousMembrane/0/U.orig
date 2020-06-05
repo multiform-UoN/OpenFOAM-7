@@ -78,7 +78,7 @@ boundaryField
           // compute permeability of the membrane
           vectorField K
                         (
-                          //this->size(),
+                          this->size(),
                           vector(0,Kl/L,0) * exp(-cc)
                         );
           

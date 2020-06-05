@@ -69,7 +69,7 @@ PIMPLE
     consistent yes;
     momentumPredictor   off;
     nOuterCorrectors    100;
-    nCorrectors         1;
+    nCorrectors         2;
     nNonOrthogonalCorrectors 2;
     pRefCell            0;
     pRefValue           0;
@@ -108,7 +108,7 @@ relaxationFactors
 {
     equations
     {
-        U 0.99;
+        U 1.0;
     }
 }
 
