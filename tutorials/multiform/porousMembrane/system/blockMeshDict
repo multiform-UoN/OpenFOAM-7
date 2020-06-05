@@ -34,7 +34,7 @@ vertices
 blocks
 (
     hex (0 1 2 3 4 5 6 7)
-    (100 200 1)
+    (200 100 1)
     simpleGrading (1 1 1)
 
 );
@@ -45,24 +45,18 @@ edges
 
 boundary
 (
-    inlet
+    wall
     {
-        type patch;
-        neighbourPatch outlet;
+        type wall;
+
         faces
         (
             (0 4 7 3)
-        );
-    }
-    outlet
-    {
-        type patch;
-        neighbourPatch inlet;
-        faces
-        (
             (1 5 6 2)
+            (3 2 6 7)
         );
     }
+
    frontAndBack
     {
         type empty;
@@ -75,20 +69,12 @@ boundary
    bottom
    {
        type wall;
-//       neighbourPatch top;
        faces
        (
         (0 4 5 1)
        );
    }
-   top
-   {
-       type wall;
-       faces
-       (
-       (3 2 6 7)
-       );
-    }
+
 );
 
 // ************************************************************************* //

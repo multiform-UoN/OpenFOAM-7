@@ -68,7 +68,7 @@ PIMPLE
 {
     consistent yes;
     momentumPredictor   off;
-    nOuterCorrectors    20;
+    nOuterCorrectors    100;
     nCorrectors         1;
     nNonOrthogonalCorrectors 2;
     pRefCell            0;
@@ -82,15 +82,16 @@ PIMPLE
     {
         ".*"
         {
-            tolerance 1e-8;
+            tolerance 1e-5;
             relTol    0;
         }
+    }
 }
 
 SIMPLE
 {
     consistent yes;
-    momentumPredictor   off;
+    momentumPredictor   on;
     nOuterCorrectors    1;
     nCorrectors         10;
     nNonOrthogonalCorrectors 2;
@@ -107,7 +108,7 @@ relaxationFactors
 {
     equations
     {
-        ".*"   0.99;
+        U 0.99;
     }
 }
 

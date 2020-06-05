@@ -20,13 +20,7 @@ internalField   uniform 0;
 
 boundaryField
 {
-  inlet
-  {
-      type            zeroGradient;//fixedJump;
-      //patchType       cyclic;
-      //jump            uniform -10;
-      //value           uniform 100000;
-    }
+
 
     side
     {
@@ -36,19 +30,14 @@ boundaryField
         value           uniform 0;
     }
 
-    outlet
+    wall
     {
-        type            zeroGradient;//fixedJump;
+        type            fixedFluxPressure;//fixedJump;
         //patchType       cyclic;
         //jump            uniform 10;
         //value           uniform 100000;
     }
 
-   top
-    {
-        type            zeroGradient;
-        value           cyclic;
-    }
 
 	topmid
     {

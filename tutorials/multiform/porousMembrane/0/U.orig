@@ -22,14 +22,10 @@ internalField uniform (0 0 0);
 boundaryField
 {
 
-    inlet
+    wall    
     {
         type            noSlip;
         //value           uniform (0 0 0);
-    }
-    outlet
-    {
-        type           noSlip;
     }
 
     side
@@ -42,12 +38,6 @@ boundaryField
         type            empty;
     }
 
-    top
-    {
-	type noSlip;
-       // type zeroGradient;
-        //value uniform (0 -1 0);
-    }
 
 	 topmid
     {   type fixedValue;
