@@ -228,6 +228,7 @@ $(multiformFvPatchFields)/dynamicRetention/retentionRates/powerLaw/powerLaw.C
 $(multiformFvPatchFields)/dynamicRetention/retentionRates/saturatingPowerLaw/saturatingPowerLaw.C
 $(multiformFvPatchFields)/dynamicRetention/retentionRates/rationalPolynomial/rationalPolynomial.C
 $(multiformFvPatchFields)/dynamicRetention/dynamicRetentionFvPatchScalarField.C
+$(multiformFvPatchFields)/binaryReaction/binaryReactionFvPatchScalarField.C
 $(multiformFvPatchFields)/newMappedField/newMappedFieldFvPatchFields.C
 $(multiformFvPatchFields)/mappedDirichlet/mappedDirichletFvPatchFields.C
 $(multiformFvPatchFields)/mappedNeumann/mappedNeumannFvPatchFields.C

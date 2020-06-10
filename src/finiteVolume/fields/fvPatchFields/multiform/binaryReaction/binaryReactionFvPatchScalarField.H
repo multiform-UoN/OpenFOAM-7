@@ -23,11 +23,11 @@ License
 
 
 Class
-    Foam::dynamicRetentionFvPatchScalarField
+    Foam::binaryReactionFvPatchScalarField
 
 Description
-    This boundary condition provide a reversible reactive flux for a scalar
-    concentration field with solid formed on the surface.
+    This boundary condition provide a reversible binary reactive flux for a the
+    reactive component with solid formed on the surface
 
 Usage
     Example of the boundary condition specification:
@@ -37,17 +37,16 @@ Usage
 
 
 SourceFiles
-    dynamicRetentionFvPatchScalarField.C
+    binaryReactionFvPatchScalarField.C
 
 Authors:
-    Federico Municchi, Nottingham (2019)
+    Matteo Icardi, Nottingham (2020)
 \*---------------------------------------------------------------------------*/
 
-#ifndef dynamicRetentionFvPatchScalarField_H
-#define dynamicRetentionFvPatchScalarField_H
+#ifndef binaryReactionFvPatchScalarField_H
+#define binaryReactionFvPatchScalarField_H
 
 #include "RobinPhiFvPatchScalarField.H"
-#include "retentionRate.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -55,10 +54,10 @@ namespace Foam
 {
 
 /*---------------------------------------------------------------------------*\
-             Class dynamicRetentionFvPatchScalarField Declaration
+             Class binaryReactionFvPatchScalarField Declaration
 \*---------------------------------------------------------------------------*/
 
-class dynamicRetentionFvPatchScalarField
+class binaryReactionFvPatchScalarField
 :
     public RobinPhiFvPatchScalarField
 {
@@ -77,9 +76,6 @@ private:
     //- Reversible reaction rate Kd
     scalarField Kd_;
 
-    // //- Switch to activate shear induced detachment
-    // Switch  shearDetachment_;
-
     //- Effective RobinF_
     scalarField RobinFeff_;
 
@@ -87,52 +83,44 @@ private:
     //  Used to trigger the storing of the old-time value
     mutable label timeIndex_;
 
-    //- Pointer to retention rate
-    autoPtr<retentionRates::retentionRate> rR_;
-
-    //- Pointer to detachment rate
-    autoPtr<retentionRates::retentionRate> dR_;
-
-	// //- Pointer to shear induced detachment rate
-  //   autoPtr<retentionRates::retentionRate> sdR_;
 
 public:
 
     //- Runtime type information
-    TypeName("dynamicRetention");
+    TypeName("binaryReaction");
 
 
     // Constructors
 
         //- Construct from patch and internal field
-        dynamicRetentionFvPatchScalarField
+        binaryReactionFvPatchScalarField
         (
             const fvPatch&,
             const DimensionedField<scalar, volMesh>&
         );
 
         //- Construct from patch, internal field and dictionary
-        dynamicRetentionFvPatchScalarField
+        binaryReactionFvPatchScalarField
         (
             const fvPatch&,
             const DimensionedField<scalar, volMesh>&,
             const dictionary&
         );
 
-        //- Construct by mapping given dynamicRetentionFvPatchScalarField
+        //- Construct by mapping given binaryReactionFvPatchScalarField
         //  onto a new patch
-        dynamicRetentionFvPatchScalarField
+        binaryReactionFvPatchScalarField
         (
-            const dynamicRetentionFvPatchScalarField&,
+            const binaryReactionFvPatchScalarField&,
             const fvPatch&,
             const DimensionedField<scalar, volMesh>&,
             const fvPatchFieldMapper&
         );
 
         //- Construct as copy
-        dynamicRetentionFvPatchScalarField
+        binaryReactionFvPatchScalarField
         (
-            const dynamicRetentionFvPatchScalarField&
+            const binaryReactionFvPatchScalarField&
         );
 
         //- Construct and return a clone
@@ -140,14 +128,14 @@ public:
         {
             return tmp<fvPatchScalarField>
             (
-                new dynamicRetentionFvPatchScalarField(*this)
+                new binaryReactionFvPatchScalarField(*this)
             );
         }
 
         //- Construct as copy setting internal field reference
-        dynamicRetentionFvPatchScalarField
+        binaryReactionFvPatchScalarField
         (
-            const dynamicRetentionFvPatchScalarField&,
+            const binaryReactionFvPatchScalarField&,
             const DimensionedField<scalar, volMesh>&
         );
 
@@ -159,7 +147,7 @@ public:
         {
             return tmp<fvPatchScalarField>
             (
-                new dynamicRetentionFvPatchScalarField(*this, iF)
+                new binaryReactionFvPatchScalarField(*this, iF)
             );
         }
 

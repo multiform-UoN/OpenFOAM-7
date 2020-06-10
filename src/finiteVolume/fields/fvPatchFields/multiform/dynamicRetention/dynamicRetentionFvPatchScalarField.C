@@ -212,12 +212,14 @@ void Foam::dynamicRetentionFvPatchScalarField::write(Ostream& os) const
 
 }
 
-//  void Foam::dynamicRetentionFvPatchScalarField::updateCoeffs()
-void Foam::dynamicRetentionFvPatchScalarField::evaluate
-(
-  const Pstream::commsTypes commsType
-)
+void Foam::dynamicRetentionFvPatchScalarField::updateCoeffs()
+// void Foam::dynamicRetentionFvPatchScalarField::evaluate
+// (
+//   const Pstream::commsTypes commsType
+// )
 {
+
+  RobinPhiFvPatchScalarField::updateCoeffs();
 
   const fvMesh& mesh = this->internalField().mesh();
 
@@ -234,6 +236,7 @@ void Foam::dynamicRetentionFvPatchScalarField::evaluate
   }
 
   scalarField& C(*this);
+  const scalarField& RobinKorig = RobinFvPatchScalarField::RobinK();
   const scalarField& RobinK0 = RobinPhiFvPatchScalarField::RobinK();
   const scalarField& RobinF0 = RobinPhiFvPatchScalarField::RobinF();
   const scalar area(gSum(this->patch().magSf()));
@@ -260,7 +263,7 @@ void Foam::dynamicRetentionFvPatchScalarField::evaluate
     // - With Newton below, this is now just the first guess
     S_ =
     (
-      - RobinK0*C*
+      - RobinKorig*C*
       (
         rR_().value(S_) -
         rR_().ddS(S0_)*S0_
@@ -270,7 +273,7 @@ void Foam::dynamicRetentionFvPatchScalarField::evaluate
     /
     (
       scalar(1)/deltaT
-      + RobinK0*C*rR_().ddS(S0_)
+      + RobinKorig*C*rR_().ddS(S0_)
       - (
         // shearDetachment_
         // ?
@@ -281,9 +284,9 @@ void Foam::dynamicRetentionFvPatchScalarField::evaluate
     );
 
     //- Firt guess for Robin coefficients
-    RobinKeff_ =
-    RobinK0*rR_().value(S_)
-    - Kd_*S_*dR_().ddS(C);
+    RobinKeff_ = RobinK0-RobinKorig
+               + RobinKorig*rR_().value(S_)
+               - Kd_*S_*dR_().ddS(C);
 
     RobinFeff_ =
     RobinF0 +
@@ -321,7 +324,7 @@ void Foam::dynamicRetentionFvPatchScalarField::evaluate
     Sn = S_;
     S_ = Sn -
     (
-      RobinK0*C*rR_().value(Sn)
+      RobinKorig*C*rR_().value(Sn)
       - (
         // shearDetachment_
         // ?
@@ -334,7 +337,7 @@ void Foam::dynamicRetentionFvPatchScalarField::evaluate
     /
     (
       scalar(1)/deltaT
-      + RobinK0*C*rR_().ddS(Sn)
+      + RobinKorig*C*rR_().ddS(Sn)
       - (
         // shearDetachment_
         // ?
@@ -346,37 +349,26 @@ void Foam::dynamicRetentionFvPatchScalarField::evaluate
     n++;
 
     //- Calculate effective Robin coefficient
-    RobinKeff_ =
-    RobinK0*rR_().value(S_)
-    - Kd_*S_*dR_().ddS(C);
+    RobinKeff_ = RobinK0-RobinKorig
+               + RobinKorig*rR_().value(S_)
+               - Kd_*S_*dR_().ddS(C);
 
-    RobinFeff_ =
-    RobinF0 +
-    - S_*
-    (
-      (
-        // shearDetachment_
-        // ?
-        // Kd_*(dR_().value(C)) - sdR_().value(srb)
-        // :
-        Kd_*(dR_().value(C))
-      )
-      - Kd_*dR_().ddS(C)*C
-    );
+    RobinFeff_ = RobinF0 +
+                - S_ *
+                (
+                  (
+                    // shearDetachment_
+                    // ?
+                    // Kd_*(dR_().value(C)) - sdR_().value(srb)
+                    // :
+                    Kd_*(dR_().value(C))
+                  )
+                  - Kd_*dR_().ddS(C)*C
+                );
 
-    // Info  << n << " S=" << gSum(this->patch().magSf()*S_)/area
-    // << " Cp=" << gSum(this->patch().magSf()*(this->patchInternalField()))/area
-    // << " Cf=" << gSum(this->patch().magSf()*(*this))/gSum(this->patch().magSf())
-    // << " R=" << gSum(this->patch().magSf()*(RobinKeff_*(*this) + RobinFeff_))/area
-    // << " dSdt=" << gSum(this->patch().magSf()*(S_-S0_)/deltaT)/area
-    // << " dCdn=" << gSum(this->patch().magSf()*this->snGrad())/area << endl;
 
   }
-  while (
-    (Foam::sqrt(gSum(pow(S_-Sn,2)))) > NEWTON_TOLERANCE
-    //&&
-    //(Foam::sqrt(gSum(pow(C-Cn,2)))) > NEWTON_TOLERANCE
-  );
+  while ( (Foam::sqrt(gSum(pow(S_-Sn,2)))) > NEWTON_TOLERANCE );
 
   Info<<"  dynamicRetention " << this->patch().name()
   <<": converged in " << n << " iterations, S="
@@ -390,7 +382,6 @@ void Foam::dynamicRetentionFvPatchScalarField::evaluate
 
 
   //    RobinFvPatchScalarField::evaluate();
-  //    RobinFvPatchScalarField::updateCoeffs();
 }
 
 
