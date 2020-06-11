@@ -165,9 +165,9 @@ void Foam::binaryReactionFvPatchScalarField::updateCoeffs()
 // (
 //   const Pstream::commsTypes commsType
 // )
-// {
+{
 
-  Foam::RobinPhiFvPatchScalarField::updateCoeffs();
+  RobinPhiFvPatchScalarField::updateCoeffs();
 
   const fvMesh& mesh = this->internalField().mesh();
 
