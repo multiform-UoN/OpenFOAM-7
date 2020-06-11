@@ -25,6 +25,8 @@ along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "binaryReactionFvPatchScalarField.H"
 #include "addToRunTimeSelectionTable.H"
+#include "volFields.H"
+#include "surfaceFields.H"
 
 #define STEADY_TIMESTEP 1e10
 
@@ -42,7 +44,8 @@ S0_(p.size()),
 RobinKeff_(p.size()),
 Kd_(p.size()),
 RobinFeff_(p.size()),
-timeIndex_(-1)
+timeIndex_(-1),
+xiName_("xi")
 {
 
 }
@@ -61,7 +64,8 @@ S0_(S_),
 RobinKeff_(p.size(),scalar(0)),
 Kd_("Kd",dict,p.size()),
 RobinFeff_(p.size(),scalar(0)),
-timeIndex_(-1)
+timeIndex_(-1),
+xiName_(dict.lookupOrDefault<word>("xi", "xi"))
 {
 }
 
@@ -80,7 +84,8 @@ S0_(mapper(ptf.S0_)),//,mapper),
 RobinKeff_(mapper(ptf.RobinKeff_)),//,mapper),
 Kd_(mapper(ptf.Kd_)),//,mapper),
 RobinFeff_(mapper(ptf.RobinFeff_)),//,mapper),
-timeIndex_(ptf.timeIndex_)
+timeIndex_(ptf.timeIndex_),
+xiName_(ptf.xiName_)
 {
 
 }
@@ -97,7 +102,8 @@ S0_(ptf.S0_),
 RobinKeff_(ptf.RobinKeff_),
 Kd_(ptf.Kd_),
 RobinFeff_(ptf.RobinFeff_),
-timeIndex_(ptf.timeIndex_)
+timeIndex_(ptf.timeIndex_),
+xiName_(ptf.xiName_)
 {
 
 }
@@ -115,7 +121,8 @@ S0_(ptf.S0_),
 RobinKeff_(ptf.RobinKeff_),
 Kd_(ptf.Kd_),
 RobinFeff_(ptf.RobinFeff_),
-timeIndex_(ptf.timeIndex_)
+timeIndex_(ptf.timeIndex_),
+xiName_(ptf.xiName_)
 {
 
 }
@@ -158,6 +165,7 @@ void Foam::binaryReactionFvPatchScalarField::write(Ostream& os) const
   writeEntry(os, "S", S_);
   writeEntry(os, "RobinKeff2", RobinKeff_);
   writeEntry(os, "RobinFeff", RobinFeff_);
+  writeEntry(os, "xi", xiName_);
 }
 
 void Foam::binaryReactionFvPatchScalarField::updateCoeffs()
@@ -188,6 +196,14 @@ void Foam::binaryReactionFvPatchScalarField::updateCoeffs()
   const scalarField& RobinK0 = RobinPhiFvPatchScalarField::RobinK();
   const scalarField& RobinF0 = RobinPhiFvPatchScalarField::RobinF();
 
+  scalarField xiSqr(C.size(),scalar(0));
+
+  if ( mesh.objectRegistry::template foundObject<volScalarField>(xiName_) )
+  {
+    const fvsPatchField<scalar>& xi =
+        patch().lookupPatchField<surfaceScalarField, scalar>(xiName_);
+    xiSqr = xi*xi;
+  }
 
   //- Get old time concentration
   if(timeIndex_!=this->db().time().timeIndex())
@@ -196,8 +212,7 @@ void Foam::binaryReactionFvPatchScalarField::updateCoeffs()
     timeIndex_ = this->db().time().timeIndex();
   }
     // - Evolution equation for S (implicit time stepping)
-    // S_ = (S0_ + deltaT*(RobinKorig* (C*C - C2) + RobinF0))
-    S_ = (S0_ + deltaT*(RobinKorig* (C*C) + RobinF0))
+    S_ = (S0_ + deltaT*(RobinKorig* (C*C - xiSqr) + RobinF0))
           /
          (scalar(1) + deltaT*Kd_);
 
@@ -206,7 +221,7 @@ void Foam::binaryReactionFvPatchScalarField::updateCoeffs()
                - scalar(2)*RobinKorig*C;
 
     RobinFeff_ = RobinF0
-               // + RobinKorig*C2
+               + RobinKorig*xiSqr
                + RobinKorig*C*C
                + Kd_*S_;
 

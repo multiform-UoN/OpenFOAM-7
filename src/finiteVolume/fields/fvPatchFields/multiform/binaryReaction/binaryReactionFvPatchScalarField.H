@@ -83,6 +83,8 @@ private:
     //  Used to trigger the storing of the old-time value
     mutable label timeIndex_;
 
+    //- non reactive component
+    word xiName_;
 
 public:
 

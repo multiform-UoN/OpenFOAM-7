@@ -90,6 +90,7 @@ int main(int argc, char *argv[])
 
             //- Relax alpha
             alpha.relax();
+            alpha.correctBoundaryConditions();
 
             //- Update fPrime
             fPrime = fea*pow(alpha,3.) - feb*alpha;

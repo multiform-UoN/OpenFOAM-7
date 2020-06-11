@@ -64,8 +64,8 @@ int main(int argc, char *argv[])
             (fvc::domainIntegrate(T0)/totalVol)
         );
 
-        fluxPatch.SSp( - dSeqdC / lambda1 );
-        fluxPatch.SSu( (normS) / lambda1 );
+        //fluxPatch.SSp( - dSeqdC / lambda1 );
+        //fluxPatch.SSu( (normS) / lambda1 );
 
         for(label corr(0);corr<nNonOrthCorrCell;corr++)
         {
@@ -79,9 +79,8 @@ int main(int argc, char *argv[])
               -  normS
               +  dSeqdC * T0
               )
-              /lambda1
-              +
-              A
+              / lambda1
+              +  A
             );
 
             TEqn.relax();

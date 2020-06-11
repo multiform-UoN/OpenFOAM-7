@@ -25,7 +25,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "RobinPhiFvPatchScalarField.H"
-#include "fvPatchFieldMapper.H"
+// #include "fvPatchFieldMapper.H"
 #include "addToRunTimeSelectionTable.H"
 #include "volFields.H"
 #include "surfaceFields.H"
@@ -101,7 +101,6 @@ void Foam::RobinPhiFvPatchScalarField::autoMap
 )
 {
     RobinFvPatchScalarField::autoMap(m);
-//    m(phiName_,phiName_);
     m(RobinKeff_,RobinKeff_);
 }
 
@@ -116,7 +115,6 @@ void Foam::RobinPhiFvPatchScalarField::rmap
     const RobinPhiFvPatchScalarField& mptf =
         refCast<const RobinPhiFvPatchScalarField>(ptf);
 
-//    phiName_.rmap(mptf.phiName_,addr);
     RobinKeff_.rmap(mptf.RobinKeff_,addr);
 }
 
