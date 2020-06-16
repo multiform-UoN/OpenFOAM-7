@@ -1,3 +1,0 @@
-eigenTransportFoam.C
-
-EXE = $(FOAM_APPBIN)/eigenTransportFoam

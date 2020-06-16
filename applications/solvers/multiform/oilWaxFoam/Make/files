@@ -1,3 +1,0 @@
-oilWaxFoam_rhe.C
-
-EXE = $(FOAM_APPBIN)/oilWaxFoam

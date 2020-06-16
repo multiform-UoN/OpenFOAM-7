@@ -1,5 +1,0 @@
-residualControl
-{
-    p               1e-09;
-    U               1e-09;
-}

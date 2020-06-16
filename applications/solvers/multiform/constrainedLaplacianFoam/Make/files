@@ -1,3 +1,0 @@
-constrainedLaplacianFoam.C
-
-EXE = $(FOAM_APPBIN)/constrainedLaplacianFoam

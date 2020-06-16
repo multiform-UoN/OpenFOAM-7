@@ -1,3 +1,0 @@
-phaseFieldNavierStokesFoam.C
-
-EXE = $(FOAM_APPBIN)/phaseFieldNavierStokesFoam

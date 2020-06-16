@@ -216,29 +216,6 @@ $(derivedFvPatchFields)/pressure/pressureFvPatchScalarField.C
 $(derivedFvPatchFields)/PrghPressure/prghPressureFvPatchScalarFields.C
 $(derivedFvPatchFields)/prghTotalHydrostaticPressure/prghTotalHydrostaticPressureFvPatchScalarField.C
 
-multiformFvPatchFields = $(fvPatchFields)/multiform
-$(multiformFvPatchFields)/Robin/RobinFvPatchFields.C
-$(multiformFvPatchFields)/RobinPhi/RobinPhiFvPatchScalarField.C
-$(multiformFvPatchFields)/fullFixedGradient/fullFixedGradientFvPatchFields.C
-$(multiformFvPatchFields)/dynamicRetention/retentionRates/retentionRate/retentionRate.C
-$(multiformFvPatchFields)/dynamicRetention/retentionRates/retentionRate/newRetentionRate.C
-$(multiformFvPatchFields)/dynamicRetention/retentionRates/constant/constant.C
-$(multiformFvPatchFields)/dynamicRetention/retentionRates/shearLinear/shearLinear.C
-$(multiformFvPatchFields)/dynamicRetention/retentionRates/powerLaw/powerLaw.C
-$(multiformFvPatchFields)/dynamicRetention/retentionRates/saturatingPowerLaw/saturatingPowerLaw.C
-$(multiformFvPatchFields)/dynamicRetention/retentionRates/rationalPolynomial/rationalPolynomial.C
-$(multiformFvPatchFields)/dynamicRetention/dynamicRetentionFvPatchScalarField.C
-$(multiformFvPatchFields)/binaryReaction/binaryReactionFvPatchScalarField.C
-$(multiformFvPatchFields)/newMappedField/newMappedFieldFvPatchFields.C
-$(multiformFvPatchFields)/mappedDirichlet/mappedDirichletFvPatchFields.C
-$(multiformFvPatchFields)/mappedNeumann/mappedNeumannFvPatchFields.C
-$(multiformFvPatchFields)/mappedRobin/mappedRobinFvPatchFields.C
-$(multiformFvPatchFields)/mappedContinuityFluid/mappedContinuityFluidFvPatchScalarField.C
-$(multiformFvPatchFields)/mappedContinuitySolid/mappedContinuitySolidFvPatchScalarField.C
-$(multiformFvPatchFields)/noFlux/noFluxFvPatchFields.C
-$(multiformFvPatchFields)/flux/fluxFvPatchFields.C
-$(multiformFvPatchFields)/codedFlux/codedFluxFvPatchFields.C
-
 fvsPatchFields = fields/fvsPatchFields
 $(fvsPatchFields)/fvsPatchField/fvsPatchFields.C
 

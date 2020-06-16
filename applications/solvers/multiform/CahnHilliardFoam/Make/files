@@ -1,3 +1,0 @@
-CahnHilliardFoam.C
-
-EXE = $(FOAM_APPBIN)/CahnHilliardFoam

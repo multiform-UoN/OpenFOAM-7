@@ -1,3 +1,0 @@
-binaryReactionFoam.C
-
-EXE = $(FOAM_APPBIN)/binaryReactionFoam

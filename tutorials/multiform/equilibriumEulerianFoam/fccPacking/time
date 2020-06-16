@@ -1,6 +1,0 @@
-timetot 4.0;
-deltat 0.0002;
-timeout 0.02;
-timeinj1 0.3999996;
-timeinj2 0.4;
-#inputMode merge

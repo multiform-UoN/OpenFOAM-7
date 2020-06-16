@@ -1,3 +1,0 @@
-pimpleScalarFoam.C
-
-EXE = $(FOAM_APPBIN)/pimpleScalarFoam

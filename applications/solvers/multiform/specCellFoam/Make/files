@@ -1,3 +1,0 @@
-specCellFoam.C
-
-EXE = $(FOAM_APPBIN)/specCellFoam

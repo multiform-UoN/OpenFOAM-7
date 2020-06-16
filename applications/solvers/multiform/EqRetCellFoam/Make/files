@@ -1,3 +1,0 @@
-EqRetCellFoam.C
-
-EXE = $(FOAM_APPBIN)/EqRetCellFoam

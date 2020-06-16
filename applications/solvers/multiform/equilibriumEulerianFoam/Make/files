@@ -1,3 +1,0 @@
-equilibriumEulerianFoam.C
-
-EXE = $(FOAM_APPBIN)/equilibriumEulerianFoam

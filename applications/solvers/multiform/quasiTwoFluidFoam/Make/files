@@ -1,3 +1,0 @@
-quasiTwoFluidFoam.C
-
-EXE = $(FOAM_APPBIN)/quasiTwoFluidFoam
